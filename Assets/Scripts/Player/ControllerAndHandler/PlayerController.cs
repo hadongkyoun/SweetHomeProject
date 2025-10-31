@@ -7,21 +7,36 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
-    // Value
+    // ================================================== Move
     [Header("Movement Parameters")]
     [SerializeField]
     private float moveSpeed;
     [SerializeField]
     private float sprintSpeed;
+    private Vector3 playerDirection = Vector3.zero;
+
+    public float animParameter_speed
+    {
+        set
+        {
+            animationHandler.SetCurrentSpeed(value);
+            Debug.Log("Changed");
+        }
+    }
+
+    // ================================================== Look
     [Space(15)]
     [Header("Looking Parameters")]
     [SerializeField]
-    private Transform TargetCamTransform;
+    private Transform FollowCam;
+
+    [Tooltip("마우스 민감도")]
     [SerializeField]
     private Vector2 lookSensitivity = new Vector2(0.1f, 0.1f);
+    [Tooltip("상하 고개 한계점")]
     [SerializeField]
     private float pitchLimit = 85f;
-    [SerializeField]
+
     private float currentPitch;
     public float CurrentPitch
     {
@@ -32,59 +47,71 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    [SerializeField]
+    private GameObject Head;
 
 
 
 
-    #region Internal Value
-    private bool isMoving;
+    #region Components
     // Controller
     private InputHandler inputHandler;
     public InputHandler InputHandler { get { return inputHandler; } }
     private CharacterController characterController;
+    private PlayerAnimatorHandler animationHandler;
     #endregion
 
     private void Awake()
     {
-        characterController = GetComponent<CharacterController>();
         inputHandler = GetComponent<InputHandler>();
+        characterController = GetComponent<CharacterController>();
+        animationHandler = GetComponentInChildren<PlayerAnimatorHandler>();
     }
 
     private void Start()
     {
         Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;   
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     void Update()
     {
         CheckInput();
-        
+
+
         MoveUpdate();
+
         LookUpdate();
+
+        //Debug.Log(Head.transform.position);
     }
 
 
 
     void CheckInput()
     {
-        if(inputHandler.MoveInput == Vector2.zero)
-        {
-            isMoving = false;
-        }
-        else
-        {
-            isMoving = true;
-        }
+
+
     }
 
     void MoveUpdate()
     {
-        Vector3 direction = transform.forward * inputHandler.MoveInput.y + transform.right * inputHandler.MoveInput.x;
-        direction.y = 0;
-        direction.Normalize();
+        playerDirection = transform.forward * inputHandler.MoveInput.y + transform.right * inputHandler.MoveInput.x;
+        playerDirection.y = 0;
+        playerDirection.Normalize();
 
-        characterController.Move(direction * moveSpeed * Time.deltaTime);
+        // Decide speed
+        float speed = moveSpeed;
+        if (inputHandler.IsSprinting)
+        {
+            if (inputHandler.MoveInput.y >= 0)
+                speed = sprintSpeed;
+        }
+
+        characterController.Move(playerDirection * speed * Time.deltaTime);
+
+        // Set animation parameter ( speed )
+        animParameter_speed = playerDirection.magnitude * speed;
     }
 
     void LookUpdate()
@@ -93,8 +120,9 @@ public class PlayerController : MonoBehaviour
 
         CurrentPitch -= lookInputValue.y;
 
-        TargetCamTransform.localRotation = Quaternion.Euler(CurrentPitch, 0, 0);
+        FollowCam.localRotation = Quaternion.Euler(CurrentPitch, 0, 0);
 
         transform.Rotate(Vector3.up * lookInputValue.x);
     }
+
 }

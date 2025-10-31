@@ -13,6 +13,9 @@ public class InputHandler : MonoBehaviour
     private Vector2 lookInput;
     public Vector2 LookInput { get { return lookInput; } }
 
+    private bool isSprinting;
+    public bool IsSprinting { get { return isSprinting; } }
+
     private void Awake()
     {
         playerInput = GetComponent<PlayerInput>();
@@ -25,5 +28,17 @@ public class InputHandler : MonoBehaviour
     public void OnLook(InputAction.CallbackContext context)
     {
         lookInput = context.ReadValue<Vector2>();
+    }
+
+    public void OnSprint(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            isSprinting = true;
+        }
+        else
+        {
+            isSprinting = false;
+        }
     }
 }
