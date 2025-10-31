@@ -4,7 +4,7 @@ using UnityEngine;
 /*
     This is State Manager ( Final State Machine )
  */
-[RequireComponent(typeof(CharacterController))]
+[RequireComponent(typeof(CharacterController), typeof(CapsuleCollider))]
 public class PlayerController : MonoBehaviour
 {
     // ================================================== Move
@@ -66,6 +66,7 @@ public class PlayerController : MonoBehaviour
         inputHandler = GetComponent<InputHandler>();
         characterController = GetComponent<CharacterController>();
         animationHandler = GetComponentInChildren<PlayerAnimatorHandler>();
+
     }
 
     private void Start()
@@ -90,7 +91,6 @@ public class PlayerController : MonoBehaviour
 
     void CheckInput()
     {
-
 
     }
 
