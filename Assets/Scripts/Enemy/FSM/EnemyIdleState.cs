@@ -17,7 +17,7 @@ public class EnemyIdleState : EnemyBaseState
             stayTime = enemyData.GetRandomStayTime();
         }
         currentTime = 0.0f;
-        enemyAI.SetAnimParameterSpeed(0.0f);
+        enemyAI.SetAnimParameterSpeed(0);
     }
 
     public override void UpdateState()

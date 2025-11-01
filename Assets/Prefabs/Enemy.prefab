@@ -87,8 +87,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0840ff69b70c45446b05d429cdb9e7cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxStayTime: 2
-  minStayTime: 1
+  maxStayTime: 4
+  minStayTime: 3
   roamingSpeed: 1.5
   trackingSpeed: 7.8
   rotationSpeed: 10
@@ -107,15 +107,15 @@ NavMeshAgent:
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
+  m_AngularSpeed: 0
+  m_StoppingDistance: 1
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 0
   m_AutoRepath: 0
   m_Height: 2
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 2
+  m_ObstacleAvoidanceType: 3
 --- !u!1001 &1258453329175870562
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -172,6 +172,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 13381ed544698b0418103800b693e127, type: 2}
+    - target: {fileID: 5392821630538825289, guid: 6206c14b6fb53694cb6b0bb8a41fcb9c, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

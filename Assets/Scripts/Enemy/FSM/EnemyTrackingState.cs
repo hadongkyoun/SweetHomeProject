@@ -10,6 +10,8 @@ public class EnemyTrackingState : EnemyBaseState
     private GameObject player;
     private NavMeshAgent navMeshAgent;
 
+    private bool setPath;
+
     public override void EnterState(EnemyAI enemyAI, EnemyData enemyData)
     {
         if (this.enemyAI == null && this.enemyData == null)
@@ -22,7 +24,7 @@ public class EnemyTrackingState : EnemyBaseState
         {
             navMeshAgent = agent;
         }
-
+        setPath = false;
         enemyAI.SetAnimParameterSpeed(enemyData.TrackingSpeed);
     }
 
