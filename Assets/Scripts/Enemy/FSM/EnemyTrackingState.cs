@@ -26,13 +26,15 @@ public class EnemyTrackingState : EnemyBaseState
         }
         setPath = false;
         enemyAI.SetAnimParameterSpeed(enemyData.TrackingSpeed);
+        navMeshAgent.speed = enemyData.TrackingSpeed;
     }
 
 
     public override void UpdateState()
     {
+        Debug.Log($"[Tracking State] Speed : {navMeshAgent.speed}");
         //Vector3 dir = (player.transform.position - enemyAI.transform.position).normalized;
-        
+
         Quaternion targetRotation = Quaternion.LookRotation(navMeshAgent.desiredVelocity);
 
         if(navMeshAgent.pathPending == false)

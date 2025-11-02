@@ -20,7 +20,6 @@ public class PlayerController : MonoBehaviour
         set
         {
             animationHandler.SetCurrentSpeed(value);
-            Debug.Log("Changed");
         }
     }
 

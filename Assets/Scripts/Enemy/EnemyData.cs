@@ -42,10 +42,11 @@ public class EnemyData : MonoBehaviour
     private void Awake()
     {
         navAgent = GetComponent<NavMeshAgent>();
+        navAgent.updateRotation = false;
     }
     void Start()
     {
-        navAgent.speed = trackingSpeed;
+        navAgent.speed = roamingSpeed;
     }
 
     public float GetRandomStayTime()

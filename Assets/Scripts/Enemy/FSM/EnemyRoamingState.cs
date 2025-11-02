@@ -39,13 +39,14 @@ public class EnemyRoamingState : EnemyBaseState
         path = null;
         setPath = false;
         enemyAI.SetAnimParameterSpeed(enemyData.RoamingSpeed);
-
+        navMeshAgent.speed = enemyData.RoamingSpeed;
     }
 
     public override void UpdateState()
     {
+        Debug.Log(navMeshAgent.speed);
 
-        Debug.Log("Roaming State");
+        Debug.Log($"[Roaming State] Speed : {navMeshAgent.speed}");
         Vector3 dir = (destination.position - enemyAI.transform.position).normalized;
         Quaternion targetRotation = Quaternion.LookRotation(dir);
 
