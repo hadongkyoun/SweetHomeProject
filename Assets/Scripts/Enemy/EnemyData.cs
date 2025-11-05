@@ -4,12 +4,21 @@ using UnityEngine.AI;
 public class EnemyData : MonoBehaviour
 {
     private NavMeshAgent navAgent;
+    public NavMeshAgent NavAgent {  get { return navAgent; } }
+    [Header("Enemy Spawn")]
+    [SerializeField]
+    private Vector3[] spawnPoints;
+
+    
+
 
     [Header("Enemy Roaming")]
     [SerializeField]
     private float maxStayTime;
     [SerializeField]
     private float minStayTime;
+    [SerializeField]
+    private float maxRandomRange;
 
 
     [Space(15)]
@@ -54,4 +63,8 @@ public class EnemyData : MonoBehaviour
         return Random.Range(minStayTime,maxStayTime);
     }
 
+    public Vector3 GetSpawnPoints()
+    {
+        return spawnPoints[Random.Range(0, spawnPoints.Length)];
+    }
 }

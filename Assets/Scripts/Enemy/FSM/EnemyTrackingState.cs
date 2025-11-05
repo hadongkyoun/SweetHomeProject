@@ -1,49 +1,47 @@
-using Unity.VisualScripting;
+
 using UnityEngine;
 using UnityEngine.AI;
 
 public class EnemyTrackingState : EnemyBaseState
 {
-    private EnemyAI enemyAI;
-    private EnemyData enemyData;
-
-    private GameObject player;
-    private NavMeshAgent navMeshAgent;
-
-    private bool setPath;
-
-    public override void EnterState(EnemyAI enemyAI, EnemyData enemyData)
+    private EnemyAI _enemyAI;
+    private Vector3 _enemyDirection;
+    public override void EnterState(EnemyAI enemyAI)
     {
-        if (this.enemyAI == null && this.enemyData == null)
+        if (_enemyAI == null)
         {
-            this.enemyAI = enemyAI;
-            player = enemyAI.Player;
-            this.enemyData = enemyData;
+            _enemyAI = enemyAI;
         }
-        if(navMeshAgent == null && enemyAI.TryGetComponent<NavMeshAgent>(out NavMeshAgent agent))
-        {
-            navMeshAgent = agent;
-        }
-        setPath = false;
-        enemyAI.SetAnimParameterSpeed(enemyData.TrackingSpeed);
-        navMeshAgent.speed = enemyData.TrackingSpeed;
+
+        _enemyAI.SetStateSpeed(_enemyAI.TrackingSpeed);
     }
 
 
     public override void UpdateState()
     {
-        Debug.Log($"[Tracking State] Speed : {navMeshAgent.speed}");
-        //Vector3 dir = (player.transform.position - enemyAI.transform.position).normalized;
+        //Debug.Log($"[Tracking State] Speed : {navMeshAgent.speed}");
+        
 
-        Quaternion targetRotation = Quaternion.LookRotation(navMeshAgent.desiredVelocity);
+        if(_enemyAI.AgentAI.pathPending == false)
+            _enemyAI.AgentAI.SetDestination(_enemyAI.Player.transform.position);
 
-        if(navMeshAgent.pathPending == false)
-            navMeshAgent.SetDestination(player.transform.position);
+        if (_enemyAI.AgentAI.remainingDistance <= _enemyAI.AgentAI.stoppingDistance)
+        {
+            //_enemyAI.AgentAI.
+        }
+        else
+        {
+            _enemyDirection = _enemyAI.AgentAI.desiredVelocity;
+        }
 
-        enemyAI.transform.rotation = Quaternion.Lerp(enemyAI.transform.rotation, targetRotation, enemyData.RotationSpeed*Time.deltaTime);
 
-        if (!enemyAI.PlayerDetected)
-            enemyAI.SwitchState(enemyAI.RoamingState);
+        Quaternion targetRotation = Quaternion.LookRotation(_enemyDirection);
+        _enemyAI.transform.rotation = Quaternion.Lerp(_enemyAI.transform.rotation, targetRotation, _enemyAI.RotationSpeed*Time.deltaTime);
+
+        
+
+        if (!_enemyAI.PlayerDetected)
+            _enemyAI.SwitchState(_enemyAI.RoamingState);
     }
     public override void ExitState()
     {

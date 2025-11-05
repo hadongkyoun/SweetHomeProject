@@ -1,67 +1,76 @@
 using System.IO;
+using TMPro.EditorUtilities;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class EnemyRoamingState : EnemyBaseState
 {
-    private EnemyAI enemyAI;
-    private EnemyData enemyData;
+    private EnemyAI _enemyAI;
+    private Transform _roamingPoint;
 
+    private Vector3 _enemyDirection;
 
-    private Transform destination;
-    private CharacterController enemyCharController;
+    private bool setRoamingPos;
 
-    private NavMeshAgent navMeshAgent;
-    private bool setPath = true;
-    private NavMeshPath path;
-
-    public override void EnterState(EnemyAI enemyAI, EnemyData enemyData)
+    private float _currentTime;
+    private float _stayTime;
+    public override void EnterState(EnemyAI enemyAI)
     {
-        if (this.enemyAI == null && this.enemyData == null)
+        if (_enemyAI == null)
         {
-            this.enemyAI = enemyAI;
-            this.enemyData = enemyData;
-            enemyCharController = enemyAI.GetComponent<CharacterController>();
+            _enemyAI = enemyAI;
         }
 
-        if (navMeshAgent == null && enemyAI.TryGetComponent<NavMeshAgent>(out NavMeshAgent agent))
-        {
-            navMeshAgent = agent;
-        }
+        _roamingPoint = _enemyAI.GetRoamingPoint();
 
-        destination = this.enemyAI.GetRoamingPoint();
+        _currentTime = 0.0f;
+        _stayTime = _enemyAI.GetStayTime();
 
+        setRoamingPos = true;
 
-        // 그냥 destination 정하는걸로바꾸기
-        path = new NavMeshPath();
-        navMeshAgent.CalculatePath(destination.position, path);
-        navMeshAgent.SetPath(path);
-        path = null;
-        setPath = false;
-        enemyAI.SetAnimParameterSpeed(enemyData.RoamingSpeed);
-        navMeshAgent.speed = enemyData.RoamingSpeed;
     }
 
     public override void UpdateState()
     {
-        Debug.Log(navMeshAgent.speed);
+        //Debug.Log($"[Roaming State] Speed : {navMeshAgent.speed}");
 
-        Debug.Log($"[Roaming State] Speed : {navMeshAgent.speed}");
-        Vector3 dir = (destination.position - enemyAI.transform.position).normalized;
-        Quaternion targetRotation = Quaternion.LookRotation(dir);
-
-
-
-        if (navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance)
+        if (setRoamingPos)
         {
-            enemyAI.SwitchState(enemyAI.IdleState);
+            NavMeshPath path = new NavMeshPath();
+            _enemyAI.AgentAI.CalculatePath(_roamingPoint.position, path);
+            _enemyAI.AgentAI.SetPath(path);
+            path = null;
+
+            setRoamingPos = false;
+            _enemyAI.SetStateSpeed(_enemyAI.RoamingSpeed);
         }
 
 
-        if (enemyAI.PlayerDetected)
-            enemyAI.SwitchState(enemyAI.TrackingState);
 
-        enemyAI.transform.rotation = Quaternion.Lerp(enemyAI.transform.rotation, targetRotation, enemyData.RotationSpeed * Time.deltaTime);
+        if (_enemyAI.AgentAI.remainingDistance <= _enemyAI.AgentAI.stoppingDistance)
+        {
+            _enemyAI.SetStateSpeed(0);
+
+            _currentTime += Time.deltaTime;
+
+            if(_currentTime >= _stayTime)
+            {
+                setRoamingPos = true;
+                _roamingPoint = _enemyAI.GetRoamingPoint();
+                _currentTime = 0.0f;
+            }
+        }
+        else
+        {
+            _enemyDirection = _enemyAI.AgentAI.desiredVelocity;
+        }
+
+
+        Quaternion targetRotation = Quaternion.LookRotation(_enemyDirection);
+        _enemyAI.transform.rotation = Quaternion.Lerp(_enemyAI.transform.rotation, targetRotation, _enemyAI.RotationSpeed * Time.deltaTime);
+
+        if (_enemyAI.PlayerDetected)
+            _enemyAI.SwitchState(_enemyAI.TrackingState);
     }
     public override void ExitState()
     {

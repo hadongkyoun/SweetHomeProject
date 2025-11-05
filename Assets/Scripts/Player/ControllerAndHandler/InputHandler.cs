@@ -6,7 +6,6 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(PlayerInput))]
 public class InputHandler : MonoBehaviour
 {
-    private PlayerInput playerInput;
 
     private Vector2 moveInput;
     public Vector2 MoveInput { get { return moveInput; } }
@@ -16,10 +15,6 @@ public class InputHandler : MonoBehaviour
     private bool isSprinting;
     public bool IsSprinting { get { return isSprinting; } }
 
-    private void Awake()
-    {
-        playerInput = GetComponent<PlayerInput>();
-    }
 
     public void OnMove(InputAction.CallbackContext context)
     {

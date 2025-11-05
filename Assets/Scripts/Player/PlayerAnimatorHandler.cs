@@ -2,15 +2,24 @@ using UnityEngine;
 
 public class PlayerAnimatorHandler : MonoBehaviour
 {
+    [SerializeField]
     private Animator animator;
+    [SerializeField]
+    private float animationBlendSpeed;
 
-    private void Awake()
+    private int xVelHash;
+    private int yVelHash;
+
+
+    private void Start()
     {
-        animator = GetComponent<Animator>();
+        xVelHash = Animator.StringToHash("X_Velocity");
+        yVelHash = Animator.StringToHash("Y_Velocity");
     }
 
-    public void SetCurrentSpeed(float speed)
+    public void SetPlayerVelocity(float velX, float velY)
     {
-        animator.SetFloat("Speed", speed);
+        animator.SetFloat(xVelHash, velX);
+        animator.SetFloat(yVelHash, velY);
     }
 }

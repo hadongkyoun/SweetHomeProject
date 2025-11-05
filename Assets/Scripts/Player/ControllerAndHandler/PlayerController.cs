@@ -4,7 +4,7 @@ using UnityEngine;
 /*
     This is State Manager ( Final State Machine )
  */
-[RequireComponent(typeof(CharacterController), typeof(CapsuleCollider))]
+[RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
     // ================================================== Move
@@ -13,15 +13,8 @@ public class PlayerController : MonoBehaviour
     private float moveSpeed;
     [SerializeField]
     private float sprintSpeed;
-    private Vector3 playerDirection = Vector3.zero;
-
-    public float animParameter_speed
-    {
-        set
-        {
-            animationHandler.SetCurrentSpeed(value);
-        }
-    }
+    private float currentSpeed;
+    private Vector3 playerDirection;
 
     // ================================================== Look
     [Space(15)]
@@ -46,71 +39,113 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    [Space(15)]
+    [Header("Physics Parameters")]
     [SerializeField]
-    private GameObject Head;
+    private float gravity = -9.81f;
+    [SerializeField]
+    private Transform groundCheck;
+    [SerializeField]
+    private float groundDistance;
+    [SerializeField]
+    private LayerMask groundMask;
 
+    private Vector3 _velocity;
+    private bool _isGrounded;
 
+    //[SerializeField]
+    //private GameObject Head;
 
+    [Space(15)]
+    [Header("Animation Parameters")]
+    [SerializeField]
+    private float animationBlendSpeed;
+    private Animator _animator;
+
+    private int xVelocity_AnimParameter;
+    private int yVelocity_AnimParameter;
+    private Vector2 animationVelocity;
 
     #region Components
     // Controller
     private InputHandler inputHandler;
     public InputHandler InputHandler { get { return inputHandler; } }
     private CharacterController characterController;
-    private PlayerAnimatorHandler animationHandler;
+    
     #endregion
 
     private void Awake()
     {
         inputHandler = GetComponent<InputHandler>();
         characterController = GetComponent<CharacterController>();
-        animationHandler = GetComponentInChildren<PlayerAnimatorHandler>();
-
+        _animator = GetComponentInChildren<Animator>();
     }
 
     private void Start()
     {
+        xVelocity_AnimParameter = Animator.StringToHash("X_Velocity");
+        yVelocity_AnimParameter = Animator.StringToHash("Y_Velocity");
+
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
     }
 
     void Update()
     {
-        CheckInput();
+        _isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+        if (_isGrounded && _velocity.y < 0)
+        {
+            // Force player to ground
+            _velocity.y = -3f;
+        }
 
+        CheckInput();
 
         MoveUpdate();
 
+        PhysicsUpdate();
+
         LookUpdate();
 
-        //Debug.Log(Head.transform.position);
     }
 
 
 
     void CheckInput()
     {
-
+        currentSpeed = inputHandler.IsSprinting ? sprintSpeed : moveSpeed;
     }
 
     void MoveUpdate()
     {
-        playerDirection = transform.forward * inputHandler.MoveInput.y + transform.right * inputHandler.MoveInput.x;
-        playerDirection.y = 0;
-        playerDirection.Normalize();
 
         // Decide speed
-        float speed = moveSpeed;
-        if (inputHandler.IsSprinting)
-        {
-            if (inputHandler.MoveInput.y >= 0)
-                speed = sprintSpeed;
-        }
+        playerDirection = transform.forward * inputHandler.MoveInput.y + transform.right * inputHandler.MoveInput.x;
+        playerDirection.y = 0;
+        AnimationUpdate(inputHandler.MoveInput.x * currentSpeed, inputHandler.MoveInput.y * currentSpeed);
 
-        characterController.Move(playerDirection * speed * Time.deltaTime);
+        playerDirection.Normalize();
 
-        // Set animation parameter ( speed )
-        animParameter_speed = playerDirection.magnitude * speed;
+        characterController.Move(playerDirection * currentSpeed* Time.deltaTime);
+
+
+    }
+
+    void AnimationUpdate(float xVel, float yVel)
+    {
+
+        animationVelocity.x = Mathf.Lerp(animationVelocity.x, xVel, animationBlendSpeed * Time.deltaTime);
+        animationVelocity.y = Mathf.Lerp(animationVelocity.y, yVel, animationBlendSpeed * Time.deltaTime);
+
+        _animator.SetFloat(xVelocity_AnimParameter, animationVelocity.x);
+        _animator.SetFloat(yVelocity_AnimParameter, animationVelocity.y);
+
+    }
+
+    void PhysicsUpdate()
+    {
+        _velocity.y += gravity * Time.deltaTime;
+        characterController.Move(_velocity * Time.deltaTime);
     }
 
     void LookUpdate()
@@ -120,8 +155,8 @@ public class PlayerController : MonoBehaviour
         CurrentPitch -= lookInputValue.y;
 
         FollowCam.localRotation = Quaternion.Euler(CurrentPitch, 0, 0);
-
         transform.Rotate(Vector3.up * lookInputValue.x);
     }
+
 
 }

@@ -1,38 +1,65 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-[RequireComponent(typeof(EnemyData))]
 public class EnemyAI : MonoBehaviour
 {
+
+    [Space(15)]
+    [Header("Enemy Roaming")]
+    [SerializeField]
+    private float maxStayTime;
+    [SerializeField]
+    private float minStayTime;
+    [SerializeField]
+    private Transform[] roamingPoints;
+
+    [Space(15)]
+    [Header("Enemy Move : It have to be same with Animator ThresHold!!!")]
+    [SerializeField]
+    private float roamingSpeed;
+    public float RoamingSpeed { get { return roamingSpeed; } }
+    [SerializeField]
+    private float trackingSpeed;
+    public float TrackingSpeed { get { return trackingSpeed; } }
+    [SerializeField]
+    private float rotationSpeed;
+    public float RotationSpeed
+    {
+        get { return rotationSpeed; }
+    }
+
+
     public bool PlayerDetected;
     public GameObject Player;
 
-    private EnemySystemHandler enemySystemHandler;
-    private EnemyData enemyData;
-    private EnemyVision enemyVision;
-    private EnemyAnimationHandler enemyAnimationHandler;
-
+    private NavMeshAgent agentAI;
+    public NavMeshAgent AgentAI { get { return agentAI; } }
 
     // FSM
     private EnemyBaseState currentState;
-    public EnemyIdleState IdleState = new EnemyIdleState();
     public EnemyRoamingState RoamingState = new EnemyRoamingState();
     public EnemyTrackingState TrackingState = new EnemyTrackingState();
 
+    private Animator animator;
+    private int speedParameter;
 
     private void Awake()
     {
         Player = GameObject.FindGameObjectWithTag("Player");
-        enemyData = GetComponent<EnemyData>();
-        enemyVision = FindFirstObjectByType<EnemyVision>();
-        enemyAnimationHandler = GetComponentInChildren<EnemyAnimationHandler>();    
+        agentAI = GetComponent<NavMeshAgent>();
+        agentAI.updateRotation = false;
+        animator = GetComponentInChildren<Animator>(); 
+        
     }
 
     void Start()
     {
-        enemyVision.SetValue(enemyData);
-        currentState = IdleState;
-        currentState.EnterState(this, enemyData);
+        speedParameter = Animator.StringToHash("Speed");
+
+        currentState = RoamingState;
+        currentState.EnterState(this);
+
+        this.transform.position = roamingPoints[Random.Range(0, roamingPoints.Length)].position;
     }
 
     // Update is called once per frame
@@ -45,21 +72,40 @@ public class EnemyAI : MonoBehaviour
     {
         currentState.ExitState();
         currentState = state;
-        state.EnterState(this, enemyData);
+        state.EnterState(this);
     }
 
-    public void SetEnemySystemHandler(EnemySystemHandler enemySystemHandler)
-    {
-        this.enemySystemHandler = enemySystemHandler;
-    }
 
+    #region RoamingState
     public Transform GetRoamingPoint()
     {
-        return enemySystemHandler.GetEnemyRoamingPoint();
+        if(roamingPoints.Length == 0)
+        {
+            return null;
+        }
+        return roamingPoints[Random.Range(0, roamingPoints.Length)];
     }
 
-    public void SetAnimParameterSpeed(float speed)
+    public float GetStayTime()
     {
-        enemyAnimationHandler.SetCurrentSpeed(speed);
+        return Random.Range(minStayTime, maxStayTime);
     }
+
+    #endregion
+
+    #region TrackingState
+
+    #endregion
+
+
+    public void SetStateSpeed(float speed)
+    {
+        animator.SetFloat(speedParameter, speed);
+        agentAI.speed = speed;
+    }
+    public void SetSpeedParameter(float speed)
+    {
+        animator.SetFloat(speedParameter, speed);
+    }
+
 }

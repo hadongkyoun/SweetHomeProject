@@ -5,29 +5,30 @@ using UnityEngine;
 
 public class EnemyVision : MonoBehaviour
 {
-    [SerializeField]
-    private EnemyAI enemyAI;
-    public EnemyAI EnemyAI { set { enemyAI = value; } }
+    private EnemyAI _enemyAI;
 
     private GameObject player;
-    public GameObject GetPlayer { get { return player; } }
     private float playerHeight;
 
-    private float detectRange;
-    private float detectAngle;
+    [SerializeField]
+    private float detectRange = 10;
+    [SerializeField]
+    private float detectAngle = 45;
 
     RaycastHit hit;
     private void Awake()
     {
         player = GameObject.FindGameObjectWithTag("Player");
         playerHeight = player.GetComponent<CharacterController>().height;
+
+        _enemyAI = GetComponentInParent<EnemyAI>();
     }
 
     bool isInAngle, isInRange, isNotHidden;
 
     private void Update()
     {
-        if(enemyAI == null)
+        if(_enemyAI == null)
         {
             Debug.LogError("ERROR!! : Need to link enemyAI from enemyVision");
         }
@@ -84,12 +85,12 @@ public class EnemyVision : MonoBehaviour
 
         if(isInRange && isInAngle && isNotHidden)
         {
-            enemyAI.PlayerDetected = true;
+            _enemyAI.PlayerDetected = true;
             Debug.Log("Detected");
         }
         
 
-        if(enemyAI.PlayerDetected)
+        if(_enemyAI.PlayerDetected)
         {
             // 멀리 떨어져 있는 상태에서
             if(!isInRange)
@@ -97,19 +98,10 @@ public class EnemyVision : MonoBehaviour
                 // 숨었을때
                 if (!isNotHidden)
                 {
-                    enemyAI.PlayerDetected = false;
+                    _enemyAI.PlayerDetected = false;
                     
                 }
             }
         }
     }
-
-    public void SetValue(EnemyData enemyData)
-    {
-        detectRange = enemyData.DetectRange;
-        detectAngle = enemyData.DetectAngle;
-    }
-
-    
-
 }
