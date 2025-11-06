@@ -1,4 +1,5 @@
 
+using Unity.Cinemachine;
 using UnityEngine;
 
 /*
@@ -7,6 +8,21 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
+    [Header("Player Camera Parameters")]
+    [SerializeField]
+    private Transform FollowCam;
+    [Tooltip("Local offset")]
+    [SerializeField]
+    private Vector3 camRunningOffset;
+    [Tooltip("Local offset")]
+    [SerializeField]
+    private Vector3 camSprintOffset;
+    [Tooltip("Local offset")]
+    [SerializeField]
+    private Vector3 camWalkOffset;
+    private Vector3 camIdleOffset;
+
+    [Space(15)]
     // ================================================== Move
     [Header("Movement Parameters")]
     [SerializeField]
@@ -19,8 +35,6 @@ public class PlayerController : MonoBehaviour
     // ================================================== Look
     [Space(15)]
     [Header("Looking Parameters")]
-    [SerializeField]
-    private Transform FollowCam;
 
     [Tooltip("마우스 민감도")]
     [SerializeField]
@@ -71,9 +85,8 @@ public class PlayerController : MonoBehaviour
     private InputHandler inputHandler;
     public InputHandler InputHandler { get { return inputHandler; } }
     private CharacterController characterController;
-    
-    #endregion
 
+    #endregion
     private void Awake()
     {
         inputHandler = GetComponent<InputHandler>();
@@ -85,6 +98,8 @@ public class PlayerController : MonoBehaviour
     {
         xVelocity_AnimParameter = Animator.StringToHash("X_Velocity");
         yVelocity_AnimParameter = Animator.StringToHash("Y_Velocity");
+        
+        camIdleOffset = FollowCam.transform.position;
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -92,6 +107,8 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        CameraOffsetUpdate();
+
         _isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
         if (_isGrounded && _velocity.y < 0)
         {
@@ -109,7 +126,24 @@ public class PlayerController : MonoBehaviour
 
     }
 
-
+    void CameraOffsetUpdate()
+    {
+        if (inputHandler.IsSprinting)
+        {
+            FollowCam.transform.localPosition = new Vector3(FollowCam.transform.localPosition.x, FollowCam.transform.localPosition.y, camSprintOffset.z);
+        }
+        else
+        {
+            if(inputHandler.MoveInput != Vector2.zero)
+            {
+                FollowCam.transform.localPosition = new Vector3(FollowCam.transform.localPosition.x, FollowCam.transform.localPosition.y, camRunningOffset.z);
+            }
+            else
+            {
+                FollowCam.transform.localPosition = camIdleOffset;
+            }
+        }
+    }
 
     void CheckInput()
     {
