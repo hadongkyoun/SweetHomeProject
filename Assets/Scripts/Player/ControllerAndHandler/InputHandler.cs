@@ -15,10 +15,15 @@ public class InputHandler : MonoBehaviour
     private bool isSprinting;
     public bool IsSprinting { get { return isSprinting; } }
 
+    private bool isGlimpseRight;
+    public bool IsGlimpseRight { get { return isGlimpseRight; } }
+
+    private bool isGlimpseLeft;
+    public bool IsGlimpseLeft { get { return isGlimpseLeft; } }
 
     public void OnMove(InputAction.CallbackContext context)
     {
-        moveInput =  context.ReadValue<Vector2>();
+        moveInput = context.ReadValue<Vector2>();
     }
     public void OnLook(InputAction.CallbackContext context)
     {
@@ -34,6 +39,33 @@ public class InputHandler : MonoBehaviour
         else
         {
             isSprinting = false;
+        }
+    }
+
+    public void OnGlimpseRight(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            isGlimpseLeft = false;
+            isGlimpseRight = true;
+        }
+        else
+        {
+            isGlimpseRight = false;
+        }
+    }
+
+    public void OnGlimpseLeft(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            isGlimpseRight = false;
+            isGlimpseLeft = true;
+
+        }
+        else
+        {
+            isGlimpseLeft = false;
         }
     }
 }

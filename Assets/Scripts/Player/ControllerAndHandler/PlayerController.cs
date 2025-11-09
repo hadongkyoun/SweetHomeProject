@@ -8,29 +8,36 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
-    [Header("Player Camera Parameters")]
+    [Header("Player Camera Parameters : Local position")]
     [SerializeField]
     private Transform FollowCam;
-    [Tooltip("Local offset")]
-    [SerializeField]
-    private Vector3 camRunningOffset;
-    [Tooltip("Local offset")]
-    [SerializeField]
-    private Vector3 camSprintOffset;
-    [Tooltip("Local offset")]
+    private Vector3 camIdleOffset;
+    // 0.43 Z
     [SerializeField]
     private Vector3 camWalkOffset;
-    private Vector3 camIdleOffset;
+    [SerializeField]
+    private Vector3 camSprintOffset;
+    [SerializeField]
+    private Vector3 camCrouchOffset;
+    // 0.3 1.4 0.277
+    [SerializeField]
+    private Vector3 camGlimpseOffset;
+    private Vector3 finalCamOffset;
+
 
     [Space(15)]
     // ================================================== Move
     [Header("Movement Parameters")]
+    [SerializeField]
+    private float glimpseSpeed;
     [SerializeField]
     private float moveSpeed;
     [SerializeField]
     private float sprintSpeed;
     private float currentSpeed;
     private Vector3 playerDirection;
+    private bool isMoving;
+    private bool isGlimpsing;
 
     // ================================================== Look
     [Space(15)]
@@ -52,6 +59,8 @@ public class PlayerController : MonoBehaviour
             currentPitch = Mathf.Clamp(value, -pitchLimit, pitchLimit);
         }
     }
+
+
 
     [Space(15)]
     [Header("Physics Parameters")]
@@ -80,6 +89,8 @@ public class PlayerController : MonoBehaviour
     private int yVelocity_AnimParameter;
     private Vector2 animationVelocity;
 
+
+
     #region Components
     // Controller
     private InputHandler inputHandler;
@@ -98,8 +109,9 @@ public class PlayerController : MonoBehaviour
     {
         xVelocity_AnimParameter = Animator.StringToHash("X_Velocity");
         yVelocity_AnimParameter = Animator.StringToHash("Y_Velocity");
-        
-        camIdleOffset = FollowCam.transform.position;
+
+        camIdleOffset = FollowCam.transform.localPosition;
+        finalCamOffset = FollowCam.transform.localPosition;
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -107,40 +119,48 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        CameraOffsetUpdate();
+        CheckInput();
 
+        //CameraOffsetUpdate();
+
+        GroundUpdate();
+        GravityUpdate();
+
+
+        MoveUpdate();
+        LookUpdate();
+
+        FollowCam.localPosition = finalCamOffset;
+    }
+
+    private void GroundUpdate()
+    {
         _isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
         if (_isGrounded && _velocity.y < 0)
         {
             // Force player to ground
             _velocity.y = -3f;
         }
-
-        CheckInput();
-
-        MoveUpdate();
-
-        PhysicsUpdate();
-
-        LookUpdate();
-
     }
 
+    // 모델 변경시 삭제 예정
     void CameraOffsetUpdate()
     {
+
+        // camOffsetZ => 로 설정 변경
         if (inputHandler.IsSprinting)
         {
-            FollowCam.transform.localPosition = new Vector3(FollowCam.transform.localPosition.x, FollowCam.transform.localPosition.y, camSprintOffset.z);
+            finalCamOffset = new Vector3(finalCamOffset.x, finalCamOffset.y, camSprintOffset.z);
         }
         else
         {
-            if(inputHandler.MoveInput != Vector2.zero)
+            if (inputHandler.MoveInput != Vector2.zero)
             {
-                FollowCam.transform.localPosition = new Vector3(FollowCam.transform.localPosition.x, FollowCam.transform.localPosition.y, camRunningOffset.z);
+                finalCamOffset = new Vector3(finalCamOffset.x, finalCamOffset.y, camWalkOffset.z);
             }
             else
             {
-                FollowCam.transform.localPosition = camIdleOffset;
+                finalCamOffset = new Vector3(finalCamOffset.x, finalCamOffset.y, camIdleOffset.z);
             }
         }
     }
@@ -148,11 +168,49 @@ public class PlayerController : MonoBehaviour
     void CheckInput()
     {
         currentSpeed = inputHandler.IsSprinting ? sprintSpeed : moveSpeed;
+
+        
+        if (inputHandler.MoveInput == Vector2.zero)
+        {
+            isMoving = false;
+        }
+        else
+        {
+            isMoving = true;
+        }
+
+        if (inputHandler.IsSprinting)
+        {
+            finalCamOffset = camIdleOffset;
+            if (inputHandler.MoveInput.y < 0)
+            {
+                currentSpeed = sprintSpeed / 2;
+            }
+
+        }
+
+
+        if (inputHandler.IsGlimpseRight)
+        {
+            finalCamOffset = new Vector3(camGlimpseOffset.x, camGlimpseOffset.y, finalCamOffset.z);
+            isGlimpsing = true;
+            currentSpeed = glimpseSpeed;
+        }
+        else if (inputHandler.IsGlimpseLeft)
+        {
+            finalCamOffset = new Vector3(-camGlimpseOffset.x, camGlimpseOffset.y, finalCamOffset.z);
+            isGlimpsing = true;
+            currentSpeed = glimpseSpeed;
+        }
+        else
+        {
+            finalCamOffset = camIdleOffset;
+            isGlimpsing = false;
+        }
     }
 
     void MoveUpdate()
     {
-
         // Decide speed
         playerDirection = transform.forward * inputHandler.MoveInput.y + transform.right * inputHandler.MoveInput.x;
         playerDirection.y = 0;
@@ -160,9 +218,7 @@ public class PlayerController : MonoBehaviour
 
         playerDirection.Normalize();
 
-        characterController.Move(playerDirection * currentSpeed* Time.deltaTime);
-
-
+        characterController.Move(playerDirection * currentSpeed * Time.deltaTime);
     }
 
     void AnimationUpdate(float xVel, float yVel)
@@ -176,7 +232,7 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    void PhysicsUpdate()
+    void GravityUpdate()
     {
         _velocity.y += gravity * Time.deltaTime;
         characterController.Move(_velocity * Time.deltaTime);
@@ -190,6 +246,7 @@ public class PlayerController : MonoBehaviour
 
         FollowCam.localRotation = Quaternion.Euler(CurrentPitch, 0, 0);
         transform.Rotate(Vector3.up * lookInputValue.x);
+
     }
 
 
