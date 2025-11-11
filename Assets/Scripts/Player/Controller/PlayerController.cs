@@ -20,8 +20,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private Vector3 camCrouchOffset;
     // 0.3 1.4 0.277
-    [SerializeField]
-    private Vector3 camGlimpseOffset;
+    //[SerializeField]
+    //private Vector3 camGlimpseOffset;
     private Vector3 finalCamOffset;
 
 
@@ -29,7 +29,7 @@ public class PlayerController : MonoBehaviour
     // ================================================== Move
     [Header("Movement Parameters")]
     [SerializeField]
-    private float glimpseSpeed;
+    private float crouchSpeed;
     [SerializeField]
     private float moveSpeed;
     [SerializeField]
@@ -37,7 +37,6 @@ public class PlayerController : MonoBehaviour
     private float currentSpeed;
     private Vector3 playerDirection;
     private bool isMoving;
-    private bool isGlimpsing;
 
     // ================================================== Look
     [Space(15)]
@@ -59,8 +58,6 @@ public class PlayerController : MonoBehaviour
             currentPitch = Mathf.Clamp(value, -pitchLimit, pitchLimit);
         }
     }
-
-
 
     [Space(15)]
     [Header("Physics Parameters")]
@@ -133,6 +130,8 @@ public class PlayerController : MonoBehaviour
         FollowCam.localPosition = finalCamOffset;
     }
 
+    
+
     private void GroundUpdate()
     {
         _isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
@@ -190,23 +189,23 @@ public class PlayerController : MonoBehaviour
         }
 
 
-        if (inputHandler.IsGlimpseRight)
-        {
-            finalCamOffset = new Vector3(camGlimpseOffset.x, camGlimpseOffset.y, finalCamOffset.z);
-            isGlimpsing = true;
-            currentSpeed = glimpseSpeed;
-        }
-        else if (inputHandler.IsGlimpseLeft)
-        {
-            finalCamOffset = new Vector3(-camGlimpseOffset.x, camGlimpseOffset.y, finalCamOffset.z);
-            isGlimpsing = true;
-            currentSpeed = glimpseSpeed;
-        }
-        else
-        {
-            finalCamOffset = camIdleOffset;
-            isGlimpsing = false;
-        }
+        //if (inputHandler.IsGlimpseRight)
+        //{
+        //    finalCamOffset = new Vector3(camGlimpseOffset.x, camGlimpseOffset.y, finalCamOffset.z);
+        //    isGlimpsing = true;
+        //    currentSpeed = glimpseSpeed;
+        //}
+        //else if (inputHandler.IsGlimpseLeft)
+        //{
+        //    finalCamOffset = new Vector3(-camGlimpseOffset.x, camGlimpseOffset.y, finalCamOffset.z);
+        //    isGlimpsing = true;
+        //    currentSpeed = glimpseSpeed;
+        //}
+        //else
+        //{
+        //    finalCamOffset = camIdleOffset;
+        //    isGlimpsing = false;
+        //}
     }
 
     void MoveUpdate()
@@ -248,6 +247,7 @@ public class PlayerController : MonoBehaviour
         transform.Rotate(Vector3.up * lookInputValue.x);
 
     }
+
 
 
 }

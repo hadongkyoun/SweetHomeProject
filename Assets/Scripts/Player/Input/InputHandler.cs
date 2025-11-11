@@ -15,11 +15,12 @@ public class InputHandler : MonoBehaviour
     private bool isSprinting;
     public bool IsSprinting { get { return isSprinting; } }
 
-    private bool isGlimpseRight;
-    public bool IsGlimpseRight { get { return isGlimpseRight; } }
 
-    private bool isGlimpseLeft;
-    public bool IsGlimpseLeft { get { return isGlimpseLeft; } }
+    //private bool isGlimpseRight;
+    //public bool IsGlimpseRight { get { return isGlimpseRight; } }
+
+    //private bool isGlimpseLeft;
+    //public bool IsGlimpseLeft { get { return isGlimpseLeft; } }
 
     public void OnMove(InputAction.CallbackContext context)
     {
@@ -42,30 +43,41 @@ public class InputHandler : MonoBehaviour
         }
     }
 
-    public void OnGlimpseRight(InputAction.CallbackContext context)
+    public void OnInteract(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
-            isGlimpseLeft = false;
-            isGlimpseRight = true;
-        }
-        else
-        {
-            isGlimpseRight = false;
+            if(TryGetComponent<Interactor>(out Interactor interactor))
+            {
+                interactor.TryInteract();
+            }
         }
     }
 
-    public void OnGlimpseLeft(InputAction.CallbackContext context)
-    {
-        if (context.performed)
-        {
-            isGlimpseRight = false;
-            isGlimpseLeft = true;
+    //public void OnGlimpseRight(InputAction.CallbackContext context)
+    //{
+    //    if (context.performed)
+    //    {
+    //        isGlimpseLeft = false;
+    //        isGlimpseRight = true;
+    //    }
+    //    else
+    //    {
+    //        isGlimpseRight = false;
+    //    }
+    //}
 
-        }
-        else
-        {
-            isGlimpseLeft = false;
-        }
-    }
+    //public void OnGlimpseLeft(InputAction.CallbackContext context)
+    //{
+    //    if (context.performed)
+    //    {
+    //        isGlimpseRight = false;
+    //        isGlimpseLeft = true;
+
+    //    }
+    //    else
+    //    {
+    //        isGlimpseLeft = false;
+    //    }
+    //}
 }
