@@ -51,6 +51,11 @@ public class InputHandler : MonoBehaviour
             {
                 interactor.TryInteract();
             }
+            Debug.Log("performed");
+        }
+        else
+        {
+            Debug.Log("none performed");
         }
     }
 

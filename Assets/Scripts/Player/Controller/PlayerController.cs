@@ -233,7 +233,10 @@ public class PlayerController : MonoBehaviour
 
     void GravityUpdate()
     {
-        _velocity.y += gravity * Time.deltaTime;
+        if (_isGrounded == false)
+        {
+            _velocity.y += gravity * Time.deltaTime;
+        }
         characterController.Move(_velocity * Time.deltaTime);
     }
 
