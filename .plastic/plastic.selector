@@ -1,4 +1,0 @@
-repository "SweetHomeProject/SweetHomeProject@14569193318148@cloud"
-  path "/"
-    br "/main"
-    co "/main"

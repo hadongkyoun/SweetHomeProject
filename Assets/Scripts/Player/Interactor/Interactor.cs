@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+
 interface IInteractable
 {
     public void Interact();
@@ -20,9 +21,7 @@ public class Interactor : MonoBehaviour
     private float interactRangeMin;
     [SerializeField]
     private float interactRangeMax;
-    // 플레이어가 오브젝트를 감지 했는지에 관한 변수
     private bool detectObject = false;
-    // 감지된 오브젝트를 참조하는 변수
     private IInteractable detectedObject = null;
     [SerializeField]
     private LayerMask interactableMask;
@@ -71,13 +70,10 @@ public class Interactor : MonoBehaviour
         int detectColliderNums = Physics.OverlapSphereNonAlloc(transform.position + characterCenter, detectCanInteractRange, hitColliders, interactableMask);
         if (detectColliderNums > 0)
         {
-            Debug.Log("Detected");
             newColliders.Clear();
-            // 실질적인 감지 된 Collider 들
             for (int i = 0; i < detectColliderNums; i++)
             {
                 newColliders.Add(hitColliders[i]);
-                // 추적하는 Collider HashSet ( 해당  Collider를 갖고 있지 않다면 Add )
                 if (trackColliders.Add(hitColliders[i]))
                 {
                     if (hitColliders[i].TryGetComponent<IInteractable>(out IInteractable interactable))
@@ -145,7 +141,6 @@ public class Interactor : MonoBehaviour
         }
     }
 
-    // 플레이어가 오브젝트를 감지 했는가
     private void IsDetectObject(bool isDetect, IInteractable interactObject)
     {
         detectObject = isDetect;
@@ -167,24 +162,22 @@ public class Interactor : MonoBehaviour
         if (detectObject && detectedObject != null)
         {
             detectedObject.Interact();
+            Debug.Log("Interact");
         }
     }
 
     #region Gizmos
     //private void OnDrawGizmosSelected()
     //{
-    //    // 1. 기즈모 색상 설정 (예: 밝은 녹색)
     //    Gizmos.color = Color.green;
 
     //    float radius = detectCanInteractRange;
 
-    //    // 3. 구체의 와이어프레임(Wireframe)을 그립니다.
-    //    // 이는 구체의 경계를 투명하게 보여줍니다.
     //    Gizmos.DrawWireSphere(transform.position + characterCenter, radius);
 
 
-    //    // (선택 사항) 구체 내부를 반투명하게 채워서 더 잘 보이게 할 수 있습니다.
-    //    // Gizmos.color = new Color(0, 1, 0, 0.2f); // 반투명 녹색
+    //    
+    //    // Gizmos.color = new Color(0, 1, 0, 0.2f); // 占쏙옙占쏙옙占쏙옙 占쏙옙占�
     //    // Gizmos.DrawSphere(position, radius);
     //}
     #endregion

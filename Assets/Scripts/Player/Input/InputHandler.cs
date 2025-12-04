@@ -1,11 +1,12 @@
-using JetBrains.Annotations;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(PlayerInput))]
 public class InputHandler : MonoBehaviour
 {
+    //[Header("Player conference")]
+    //[SerializeField]
+    //private InventoryHandler inventoryHandler;
 
     private Vector2 moveInput;
     public Vector2 MoveInput { get { return moveInput; } }
@@ -51,13 +52,17 @@ public class InputHandler : MonoBehaviour
             {
                 interactor.TryInteract();
             }
-            Debug.Log("performed");
-        }
-        else
-        {
-            Debug.Log("none performed");
         }
     }
+
+    //public void OnInventory(InputAction.CallbackContext context)
+    //{
+    //    if (context.performed)
+    //    {
+    //        inventoryHandler.InventoryTrigger();
+    //    }
+    //}
+
 
     //public void OnGlimpseRight(InputAction.CallbackContext context)
     //{

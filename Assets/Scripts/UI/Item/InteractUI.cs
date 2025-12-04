@@ -2,22 +2,32 @@ using UnityEngine;
 
 public class InteractUI : MonoBehaviour
 {
-    [SerializeField]
-    private Transform uiObjectTransform;
+
+
+    private GameObject uiObject;
     private Camera mainCamera;
 
     private bool activated = false;
+
+    public void Initialize(GameObject interactableUI)
+    {
+        this.uiObject = interactableUI;
+    }
+
     private void Awake()
     {
         mainCamera = Camera.main;
     }
 
+
+
     private void LateUpdate()
     {
         if (!activated)
             return;
-        uiObjectTransform.LookAt(uiObjectTransform.position + mainCamera.transform.rotation * Vector3.forward, mainCamera.transform.rotation * Vector3.up);
+        uiObject.transform.LookAt(uiObject.transform.position + mainCamera.transform.rotation * Vector3.forward, mainCamera.transform.rotation * Vector3.up);
     }
+
 
     public void ActivateUI(bool isOn)
     {
@@ -25,6 +35,7 @@ public class InteractUI : MonoBehaviour
             return;
 
         activated = isOn;
-        uiObjectTransform.gameObject.SetActive(activated);
+        uiObject.transform.gameObject.SetActive(activated);
     }
+
 }
