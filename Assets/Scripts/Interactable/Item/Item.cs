@@ -8,7 +8,6 @@ public class Item : MonoBehaviour, IInteractable, IItem
     // Scriptable Object : ItemInformation
     [SerializeField]
     private ItemInformation itemInformation;
-    public ItemInformation ItemInformation { get { return itemInformation; } }
     [SerializeField]
     private GameObject interactableUI;
 
@@ -23,6 +22,24 @@ public class Item : MonoBehaviour, IInteractable, IItem
         interactUI.Initialize(Instantiate(interactableUI, transform));
         inventoryHandler = FindFirstObjectByType<InventoryHandler>();
     }
+
+    public Sprite GetItemSprite()
+    {
+        return itemInformation.Sprite;
+    }
+
+    public string GetItemName()
+    {
+        return itemInformation.ItemName;
+    }
+    public string GetItemContext()
+    {
+        return itemInformation.ItemContext;
+    }
+    public InventoryListType GetItemType()
+    {
+        return itemInformation.ItemType;
+    }   
 
     public void Interact()
     {

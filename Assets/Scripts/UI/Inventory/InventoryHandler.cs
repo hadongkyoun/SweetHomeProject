@@ -14,12 +14,12 @@ public class InventoryHandler : MonoBehaviour
     }
     void Start()
     {
-        
+
     }
 
     void Update()
     {
-        
+        //s
     }
 
     public List<Item> GetItems()

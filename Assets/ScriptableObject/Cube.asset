@@ -13,9 +13,7 @@ MonoBehaviour:
   m_Name: Cube
   m_EditorClassIdentifier: 
   Sprite: {fileID: 21300000, guid: a6ba645096c71ad439660d1f8ff18e04, type: 3}
-  Name: GreenCube
-  Explain: 'This is Green Cube.
+  ItemName: GreenCube
+  ItemContext: 'This is 6 area 3d square.
 
-    There is 6 area plane around center.
-
-'
+    Have green color.'

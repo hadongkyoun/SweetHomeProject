@@ -17,9 +17,9 @@ public class Slot : MonoBehaviour
     {
         this.gameObject.SetActive(false);
     }
-    public void UpdateSlotImage(ItemInformation itemInformation)
+    public void UpdateSlotImage(Sprite itemSprite)
     {
-        if (itemInformation == null)
+        if (itemSprite == null)
         {
             image.sprite = null;
             if (haveItemImage)
@@ -27,7 +27,7 @@ public class Slot : MonoBehaviour
             return;
         }
 
-        image.sprite = itemInformation.Sprite;
+        image.sprite = itemSprite;
         if (!haveItemImage)
             Activated(true);
         

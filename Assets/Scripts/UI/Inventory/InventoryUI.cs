@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,18 +9,45 @@ using UnityEngine.UI;
 public class InventoryUI : MonoBehaviour
 {
     private CanvasGroup Inventory;
+
+
+
     private List<Item> items;
+    // Real visual
+    private List<Item> ForShowingTempList = new List<Item>();
+    private List<Item> showingItems;
+    
+
+    // 켜질 때, 이거 확인
+    private InventoryListType currentItemListType = InventoryListType.Item;
+
     [SerializeField]
     private Slot[] ItemsSlot = new Slot[11];
+
     private int itemIndicator = 0;
     private int slotIndicator = 0;
     private int slotMoveDirection;
+
+    [Header("Inventory Slot Visual")]
+    [SerializeField]
+    private CanvasGroup itemSlotView;
+
+    [Space(15)]
+    [Header("Main Slot Information")]
+    [SerializeField]
+    private TextMeshProUGUI nameTMP;
+    [SerializeField]
+    private TextMeshProUGUI contextTMP;
+    [SerializeField]
+    private TextMeshProUGUI slotIndicatorInfoTMP;
+
     [Space(15)]
     [Header("Player UI Handler State")]
     [SerializeField]
     private float wheelIncreaseAmount = 0.0f;
     private float wheelAmountPlus = 0;
     private float wheelAmountMinus = 0;
+
 
 
     private int referenceValue;
@@ -35,13 +63,25 @@ public class InventoryUI : MonoBehaviour
     private void Start()
     {
         items = FindFirstObjectByType<InventoryHandler>().GetItems();
+        showingItems = ForShowingTempList;
+        // Practical item list : showing Items
+        SetShowingItemList();
+
+
+        slotIndicatorInfoTMP.text = $"0/{items.Count}";
+        nameTMP.text = "";
+        contextTMP.text = "";
+
     }
+
 
     private void Update()
     {
         if (!isOn)
             return;
 
+
+        #region Wheel Scroll Update
         float scrollInput = Input.GetAxis("Mouse ScrollWheel");
         slotMoveDirection = 0;
         if (scrollInput != 0)
@@ -89,11 +129,13 @@ public class InventoryUI : MonoBehaviour
             {
                 UpdateSlot(true);
             }
-
         }
+            #endregion
     }
 
     private bool isOn = false;
+
+    #region Inventory UI Handle Methods
     public bool InventoryTrigger()
     {
         isOn = !isOn;
@@ -113,14 +155,37 @@ public class InventoryUI : MonoBehaviour
         return isOn;
     }
 
+    private void ItemsCountZero()
+    {
+        Debug.Log("There is nothing show items.");
+
+        slotIndicatorInfoTMP.text = $"0/{items.Count}";
+        nameTMP.text = "";
+        contextTMP.text = "";
+
+        for (int i = 0; i < ItemsSlot.Length; i++)
+        {
+            ItemsSlot[i].UpdateSlotImage(null);
+        }
+
+        // Reset indicators
+        itemIndicator = 0;
+        slotIndicator = 0;
+    }
+    #endregion
+
+    #region Update Slot Methods
+
+    // Execute only once from InventoryHandler.cs when item pick up.
     public void UpdateItemSlotList()
     {
         if (items == null)
         {
-            items = FindFirstObjectByType<InventoryHandler>().GetItems();
+            Debug.LogError("[Error] : There is no item list reference");
         }
         else
         {
+            SetShowingItemList();
             // Update slot visual terms.
             UpdateSlot(false);
         }
@@ -128,14 +193,17 @@ public class InventoryUI : MonoBehaviour
 
     private void UpdateSlot(bool isScrolling)
     {
-        if (items.Count <= 0)
+        if (showingItems.Count <= 0)
+        {
+            ItemsCountZero();
             return;
+        }
 
-        ItemsSlot[ItemsSlot.Length / 2].UpdateSlotImage(items[itemIndicator].ItemInformation);
+            ItemsSlot[ItemsSlot.Length / 2].UpdateSlotImage(showingItems[itemIndicator].GetItemSprite());
 
         if (isScrolling)
         {
-            if ((slotIndicator == 0 && slotMoveDirection == -1) || (slotIndicator == items.Count - 1 && slotMoveDirection == 1))
+            if ((slotIndicator == 0 && slotMoveDirection == -1) || (slotIndicator == showingItems.Count - 1 && slotMoveDirection == 1))
             {
                 if (ItemsSlot[ItemsSlot.Length / 2].TryGetComponent<Animation>(out Animation animation))
                 {
@@ -163,22 +231,75 @@ public class InventoryUI : MonoBehaviour
             }
             else
             {
-                ItemsSlot[i].UpdateSlotImage(items[i + referenceValue].ItemInformation);
+                ItemsSlot[i].UpdateSlotImage(showingItems[i + referenceValue].GetItemSprite());
             }
         }
 
         for (int i = ItemsSlot.Length / 2 + 1; i < ItemsSlot.Length; i++)
         {
-            if (i + referenceValue >= items.Count)
+            if (i + referenceValue >= showingItems.Count)
             {
                 ItemsSlot[i].UpdateSlotImage(null);
             }
             else
             {
-                ItemsSlot[i].UpdateSlotImage(items[i + referenceValue].ItemInformation);
+                ItemsSlot[i].UpdateSlotImage(showingItems[i + referenceValue].GetItemSprite());
             }
         }
         slotIndicator = itemIndicator;
+        UpdateMainSlotItemInfo(slotIndicator);
+
     }
 
+    // This is execute in UpdateSlot method
+    private void UpdateMainSlotItemInfo(int slotIndicater)
+    {
+        
+        if (showingItems.Count == 0)
+        {
+            slotIndicatorInfoTMP.text = $"0/{showingItems.Count}";
+            nameTMP.text = "";
+            contextTMP.text = "";
+        }
+        else
+        {
+            slotIndicatorInfoTMP.text = $"{slotIndicator + 1}/{showingItems.Count}";
+            nameTMP.text = showingItems[slotIndicater].GetItemName();
+            contextTMP.text = showingItems[slotIndicater].GetItemContext();
+        }
+    }
+    #endregion
+
+
+    #region Showing Item List Methods
+    private void SetShowingItemList()
+    {
+        ForShowingTempList.Clear();
+
+        for (int i = 0; i < items.Count; i++)
+        {
+            if (items[i].GetItemType() == currentItemListType)
+            {
+                ForShowingTempList.Add(items[i]);
+            }
+        }
+    }
+
+    public void ChangeShowingItemList(InventoryListType listType)
+    {
+        
+        currentItemListType = listType;
+
+        // Reset indicators
+        itemIndicator = 0;
+        slotIndicator = 0;
+
+
+        SetShowingItemList();
+        // Update slot visuals
+        UpdateSlot(false);
+
+        itemSlotView.alpha = 1.0f;
+    }
+    #endregion
 }

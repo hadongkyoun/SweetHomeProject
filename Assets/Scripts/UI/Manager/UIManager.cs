@@ -21,11 +21,25 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    private void LimitCursor(bool isOn)
+    {
+        if (isOn)
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.Confined;
+        }
+        else
+        {
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+    }
+
     public void Inventory()
     {
         bool isInventoryOpen = inventoryUI.InventoryTrigger();
         playerInput.enabled = !isInventoryOpen;
-
+        LimitCursor(isInventoryOpen);
 
     }
 
