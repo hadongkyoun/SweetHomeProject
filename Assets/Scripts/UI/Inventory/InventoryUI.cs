@@ -30,9 +30,8 @@ public class InventoryUI : MonoBehaviour
     [SerializeField]
     private CanvasGroup itemSlotView;
     [SerializeField]
-    private GameObject itemUIGuide;
-    //[SerializeField]
-    //private CanvasGroup itemUIGuide_ItemUse;
+    private InventoryUIGuide itemUIGuide;
+    
 
     [Space(15)]
     [Header("Main Slot Information")]
@@ -138,10 +137,7 @@ public class InventoryUI : MonoBehaviour
 
         if(isOn && itemSlotSystemOn && Input.GetMouseButtonDown(0))
         {
-            //if (items[slotIndicator].GetItemCanUse())
-            //{
-            //    items[slotIndicator].ActivateUse();
-            //}
+            // Inventory UI => Make Investigate System in InventoryUIGuide.cs
         }
     }
 
@@ -184,7 +180,7 @@ public class InventoryUI : MonoBehaviour
         itemIndicator = 0;
         slotIndicator = 0;
 
-        itemUIGuide.SetActive(false);
+        itemUIGuide.ActivateUIGuide(false);
         itemSlotSystemOn = false;
     }
     #endregion
@@ -216,7 +212,7 @@ public class InventoryUI : MonoBehaviour
 
 
         // Item UI Guide on
-        itemUIGuide.SetActive(true);
+        itemUIGuide.ActivateUIGuide(true);
 
         ItemsSlot[ItemsSlot.Length / 2].UpdateSlotImage(showingItems[itemIndicator].GetItemSprite());
 
@@ -282,15 +278,7 @@ public class InventoryUI : MonoBehaviour
         }
         else
         {
-            //bool canUsed = items[slotIndicator].GetItemCanUse();
-            //if (canUsed)
-            //{
-            //    itemUIGuide_ItemUse.alpha = 1.0f;
-            //}
-            //else
-            //{
-            //    itemUIGuide_ItemUse.alpha = 0.2f;
-            //}
+            
 
             slotIndicatorInfoTMP.text = $"{slotIndicator + 1}/{showingItems.Count}";
             nameTMP.text = showingItems[slotIndicator].GetItemName();
