@@ -3,7 +3,7 @@ using UnityEngine;
 
 
 [RequireComponent(typeof(InteractUI))]
-public class Item : MonoBehaviour, IInteractable, IItem
+public class Item : MonoBehaviour, IInteractable
 {
     // Scriptable Object : ItemInformation
     [SerializeField]
@@ -39,7 +39,8 @@ public class Item : MonoBehaviour, IInteractable, IItem
     public InventoryListType GetItemType()
     {
         return itemInformation.ItemType;
-    }   
+    }
+    
 
     public void Interact()
     {
@@ -68,8 +69,15 @@ public class Item : MonoBehaviour, IInteractable, IItem
 
     }
 
-    public void UseItem()
-    {
-        //throw new System.NotImplementedException();
-    }
+    //public void ActivateUse()
+    //{
+
+    //    if (GetItemCanUse() == false)
+    //    {
+    //        Debug.LogError("This is not can use item. But it called.");
+    //        return;
+    //    }
+
+    //    inventoryHandler.PlayerUseItem(this);
+    //}
 }

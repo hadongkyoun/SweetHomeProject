@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 
 
@@ -16,7 +14,7 @@ public class InventoryUI : MonoBehaviour
     // Real visual
     private List<Item> ForShowingTempList = new List<Item>();
     private List<Item> showingItems;
-    
+
 
     // 켜질 때, 이거 확인
     private InventoryListType currentItemListType = InventoryListType.Item;
@@ -31,6 +29,10 @@ public class InventoryUI : MonoBehaviour
     [Header("Inventory Slot Visual")]
     [SerializeField]
     private CanvasGroup itemSlotView;
+    [SerializeField]
+    private GameObject itemUIGuide;
+    //[SerializeField]
+    //private CanvasGroup itemUIGuide_ItemUse;
 
     [Space(15)]
     [Header("Main Slot Information")]
@@ -51,6 +53,8 @@ public class InventoryUI : MonoBehaviour
 
 
     private int referenceValue;
+    private bool itemSlotSystemOn = false;
+
     private void Awake()
     {
         Inventory = GetComponent<CanvasGroup>();
@@ -130,7 +134,15 @@ public class InventoryUI : MonoBehaviour
                 UpdateSlot(true);
             }
         }
-            #endregion
+        #endregion
+
+        if(isOn && itemSlotSystemOn && Input.GetMouseButtonDown(0))
+        {
+            //if (items[slotIndicator].GetItemCanUse())
+            //{
+            //    items[slotIndicator].ActivateUse();
+            //}
+        }
     }
 
     private bool isOn = false;
@@ -171,6 +183,9 @@ public class InventoryUI : MonoBehaviour
         // Reset indicators
         itemIndicator = 0;
         slotIndicator = 0;
+
+        itemUIGuide.SetActive(false);
+        itemSlotSystemOn = false;
     }
     #endregion
 
@@ -199,7 +214,11 @@ public class InventoryUI : MonoBehaviour
             return;
         }
 
-            ItemsSlot[ItemsSlot.Length / 2].UpdateSlotImage(showingItems[itemIndicator].GetItemSprite());
+
+        // Item UI Guide on
+        itemUIGuide.SetActive(true);
+
+        ItemsSlot[ItemsSlot.Length / 2].UpdateSlotImage(showingItems[itemIndicator].GetItemSprite());
 
         if (isScrolling)
         {
@@ -252,9 +271,9 @@ public class InventoryUI : MonoBehaviour
     }
 
     // This is execute in UpdateSlot method
-    private void UpdateMainSlotItemInfo(int slotIndicater)
+    private void UpdateMainSlotItemInfo(int slotIndicator)
     {
-        
+
         if (showingItems.Count == 0)
         {
             slotIndicatorInfoTMP.text = $"0/{showingItems.Count}";
@@ -263,9 +282,19 @@ public class InventoryUI : MonoBehaviour
         }
         else
         {
+            //bool canUsed = items[slotIndicator].GetItemCanUse();
+            //if (canUsed)
+            //{
+            //    itemUIGuide_ItemUse.alpha = 1.0f;
+            //}
+            //else
+            //{
+            //    itemUIGuide_ItemUse.alpha = 0.2f;
+            //}
+
             slotIndicatorInfoTMP.text = $"{slotIndicator + 1}/{showingItems.Count}";
-            nameTMP.text = showingItems[slotIndicater].GetItemName();
-            contextTMP.text = showingItems[slotIndicater].GetItemContext();
+            nameTMP.text = showingItems[slotIndicator].GetItemName();
+            contextTMP.text = showingItems[slotIndicator].GetItemContext();
         }
     }
     #endregion
@@ -287,7 +316,7 @@ public class InventoryUI : MonoBehaviour
 
     public void ChangeShowingItemList(InventoryListType listType)
     {
-        
+        itemSlotSystemOn = true;
         currentItemListType = listType;
 
         // Reset indicators

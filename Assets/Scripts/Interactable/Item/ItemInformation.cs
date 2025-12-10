@@ -5,6 +5,8 @@ using UnityEngine;
 public class ItemInformation : ScriptableObject
 {
     public InventoryListType ItemType;
+    public int ItemID;
+
     public Sprite Sprite;
     public string ItemName;
     [TextArea]

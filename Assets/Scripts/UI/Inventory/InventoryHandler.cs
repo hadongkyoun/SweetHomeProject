@@ -37,4 +37,9 @@ public class InventoryHandler : MonoBehaviour
         // And then try update ui slot in this method
         inventoryUI.UpdateItemSlotList();
     }
+
+    public void PlayerUseItem(Item item)
+    {
+        Debug.Log("UsedItem");
+    }
 }
