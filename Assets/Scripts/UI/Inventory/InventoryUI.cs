@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 
 
 
@@ -30,17 +31,8 @@ public class InventoryUI : MonoBehaviour
     [SerializeField]
     private CanvasGroup itemSlotView;
     [SerializeField]
-    private InventoryUIGuide itemUIGuide;
-    
-
-    [Space(15)]
-    [Header("Main Slot Information")]
-    [SerializeField]
-    private TextMeshProUGUI nameTMP;
-    [SerializeField]
-    private TextMeshProUGUI contextTMP;
-    [SerializeField]
-    private TextMeshProUGUI slotIndicatorInfoTMP;
+    private SlotViewHandler slotViewHandler;
+    private InvestigateHandler investigateHandler;
 
     [Space(15)]
     [Header("Player UI Handler State")]
@@ -54,6 +46,12 @@ public class InventoryUI : MonoBehaviour
     private int referenceValue;
     private bool itemSlotSystemOn = false;
 
+
+    [SerializeField]
+    private UnityEvent ResetEvent;
+
+    private bool resetFinish = false;
+
     private void Awake()
     {
         Inventory = GetComponent<CanvasGroup>();
@@ -61,6 +59,7 @@ public class InventoryUI : MonoBehaviour
         Inventory.interactable = false;
         Inventory.blocksRaycasts = false;
 
+        investigateHandler = GetComponentInChildren<InvestigateHandler>();  
     }
 
     private void Start()
@@ -71,77 +70,100 @@ public class InventoryUI : MonoBehaviour
         SetShowingItemList();
 
 
-        slotIndicatorInfoTMP.text = $"0/{items.Count}";
-        nameTMP.text = "";
-        contextTMP.text = "";
-
     }
 
 
     private void Update()
     {
+        
+
         if (!isOn)
+        {
+            if (resetFinish == false)
+            {
+                ResetEvent.Invoke();
+                ItemsCountZero();
+                resetFinish = true;
+            }
             return;
+        }
+        resetFinish = false;
+
 
 
         #region Wheel Scroll Update
-        float scrollInput = Input.GetAxis("Mouse ScrollWheel");
-        slotMoveDirection = 0;
-        if (scrollInput != 0)
+
+        
+
+        if (itemSlotSystemOn)
         {
-            if (scrollInput < 0)
+            if (investigateHandler.IsInvestigateModeOn())
+                return;
+
+            float scrollInput = Input.GetAxis("Mouse ScrollWheel");
+            slotMoveDirection = 0;
+            if (scrollInput != 0)
             {
-                wheelAmountPlus = 0.0f;
-                wheelAmountMinus += wheelIncreaseAmount * scrollInput;
-            }
-            else if (scrollInput > 0)
-            {
-                wheelAmountMinus = 0.0f;
-                wheelAmountPlus += wheelIncreaseAmount * scrollInput;
-            }
+                if (scrollInput < 0)
+                {
+                    wheelAmountPlus = 0.0f;
+                    wheelAmountMinus += wheelIncreaseAmount * scrollInput;
+                }
+                else if (scrollInput > 0)
+                {
+                    wheelAmountMinus = 0.0f;
+                    wheelAmountPlus += wheelIncreaseAmount * scrollInput;
+                }
 
 
-            if (wheelAmountPlus > 1.0f)
-            {
-                // this is left slot move
-                wheelAmountPlus = 0.0f;
-                slotMoveDirection = -1;
-            }
-            else if (wheelAmountMinus < -1.0f)
-            {
-                // this is right slot move
-                wheelAmountMinus = 0.0f;
-                slotMoveDirection = 1;
-            }
-            else
-            {
-                slotMoveDirection = 0;
-            }
+                if (wheelAmountPlus > 1.0f)
+                {
+                    // this is left slot move
+                    wheelAmountPlus = 0.0f;
+                    slotMoveDirection = -1;
+                }
+                else if (wheelAmountMinus < -1.0f)
+                {
+                    // this is right slot move
+                    wheelAmountMinus = 0.0f;
+                    slotMoveDirection = 1;
+                }
+                else
+                {
+                    slotMoveDirection = 0;
+                }
 
-            itemIndicator += slotMoveDirection;
+                itemIndicator += slotMoveDirection;
 
-            if (itemIndicator <= 0)
-                itemIndicator = 0;
+                if (itemIndicator <= 0)
+                    itemIndicator = 0;
 
-            else if (itemIndicator >= items.Count - 1)
-            {
-                itemIndicator = items.Count - 1;
-            }
+                else if (itemIndicator >= items.Count - 1)
+                {
+                    itemIndicator = items.Count - 1;
+                }
 
-            if (slotMoveDirection != 0)
-            {
-                UpdateSlot(true);
+                if (slotMoveDirection != 0)
+                {
+                    UpdateSlot(true);
+                }
             }
         }
         #endregion
-
-        if(isOn && itemSlotSystemOn && Input.GetMouseButtonDown(0))
-        {
-            // Inventory UI => Make Investigate System in InventoryUIGuide.cs
-        }
     }
 
     private bool isOn = false;
+
+
+    public Item GetIndicatedItem()
+    {
+        if (showingItems.Count == 0)
+        {
+            return null;
+        }
+        return showingItems[itemIndicator];
+    }
+
 
     #region Inventory UI Handle Methods
     public bool InventoryTrigger()
@@ -165,11 +187,6 @@ public class InventoryUI : MonoBehaviour
 
     private void ItemsCountZero()
     {
-        Debug.Log("There is nothing show items.");
-
-        slotIndicatorInfoTMP.text = $"0/{items.Count}";
-        nameTMP.text = "";
-        contextTMP.text = "";
 
         for (int i = 0; i < ItemsSlot.Length; i++)
         {
@@ -180,8 +197,10 @@ public class InventoryUI : MonoBehaviour
         itemIndicator = 0;
         slotIndicator = 0;
 
-        itemUIGuide.ActivateUIGuide(false);
+        slotViewHandler.ActivateUIGuide(false);
         itemSlotSystemOn = false;
+
+        Debug.Log("Items count is zero.");
     }
     #endregion
 
@@ -210,9 +229,14 @@ public class InventoryUI : MonoBehaviour
             return;
         }
 
+        if (!isOn)
+        {
+            return;
+        }
+
 
         // Item UI Guide on
-        itemUIGuide.ActivateUIGuide(true);
+        slotViewHandler.ActivateUIGuide(true);
 
         ItemsSlot[ItemsSlot.Length / 2].UpdateSlotImage(showingItems[itemIndicator].GetItemSprite());
 
@@ -220,16 +244,16 @@ public class InventoryUI : MonoBehaviour
         {
             if ((slotIndicator == 0 && slotMoveDirection == -1) || (slotIndicator == showingItems.Count - 1 && slotMoveDirection == 1))
             {
-                if (ItemsSlot[ItemsSlot.Length / 2].TryGetComponent<Animation>(out Animation animation))
+                if (ItemsSlot[ItemsSlot.Length / 2].TryGetComponent<MainSlot>(out MainSlot mainSlot))
                 {
-                    animation.Play("CannotMove");
+                    mainSlot.PlayAnimation("CannotMove");
                 }
             }
             else
             {
-                if (ItemsSlot[ItemsSlot.Length / 2].TryGetComponent<Animation>(out Animation animation))
+                if (ItemsSlot[ItemsSlot.Length / 2].TryGetComponent<MainSlot>(out MainSlot mainSlot))
                 {
-                    animation.Play("MainSlot");
+                    mainSlot.PlayAnimation("MainSlot");
                 }
             }
         }
@@ -261,29 +285,14 @@ public class InventoryUI : MonoBehaviour
                 ItemsSlot[i].UpdateSlotImage(showingItems[i + referenceValue].GetItemSprite());
             }
         }
+
         slotIndicator = itemIndicator;
-        UpdateMainSlotItemInfo(slotIndicator);
-
-    }
-
-    // This is execute in UpdateSlot method
-    private void UpdateMainSlotItemInfo(int slotIndicator)
-    {
-
-        if (showingItems.Count == 0)
+        // Main Slot Index => ItemsSlot.Length / 2
+        if (ItemsSlot[ItemsSlot.Length / 2].TryGetComponent<MainSlot>(out MainSlot mainSlotItem))
         {
-            slotIndicatorInfoTMP.text = $"0/{showingItems.Count}";
-            nameTMP.text = "";
-            contextTMP.text = "";
+            mainSlotItem.UpdateMainSlotItemInfo(showingItems, slotIndicator);
         }
-        else
-        {
-            
 
-            slotIndicatorInfoTMP.text = $"{slotIndicator + 1}/{showingItems.Count}";
-            nameTMP.text = showingItems[slotIndicator].GetItemName();
-            contextTMP.text = showingItems[slotIndicator].GetItemContext();
-        }
     }
     #endregion
 
@@ -304,6 +313,14 @@ public class InventoryUI : MonoBehaviour
 
     public void ChangeShowingItemList(InventoryListType listType)
     {
+        if (items.Count <= 0)
+        {
+            ItemsCountZero();
+            return;
+        }
+
+      
+
         itemSlotSystemOn = true;
         currentItemListType = listType;
 
@@ -317,6 +334,9 @@ public class InventoryUI : MonoBehaviour
         UpdateSlot(false);
 
         itemSlotView.alpha = 1.0f;
+
     }
     #endregion
+
+
 }

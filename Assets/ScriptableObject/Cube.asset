@@ -13,9 +13,8 @@ MonoBehaviour:
   m_Name: Cube
   m_EditorClassIdentifier: 
   ItemType: 0
-  ItemID: 0
-  canUse: 1
   Sprite: {fileID: 21300000, guid: a6ba645096c71ad439660d1f8ff18e04, type: 3}
+  ItemPrefab: {fileID: 6994450120426954717, guid: 1b4e4e64433072e46bc3d30265fc6263, type: 3}
   ItemName: GreenCube
   ItemContext: 'This is 6 area 3d square.
 

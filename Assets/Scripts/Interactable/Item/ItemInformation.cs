@@ -8,6 +8,8 @@ public class ItemInformation : ScriptableObject
     public int ItemID;
 
     public Sprite Sprite;
+    public GameObject ItemPrefab;
+    
     public string ItemName;
     [TextArea]
     public string ItemContext;

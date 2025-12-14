@@ -38,8 +38,10 @@ public class InventoryHandler : MonoBehaviour
         inventoryUI.UpdateItemSlotList();
     }
 
-    public void PlayerUseItem(Item item)
-    {
-        Debug.Log("UsedItem");
-    }
+    //public void PlayerUseItem(int id)
+    //{
+
+    //}
+
+
 }

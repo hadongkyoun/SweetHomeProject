@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4496080653595906477}
-  - component: {fileID: 8054531930283744305}
+  - component: {fileID: 7292541045344842600}
   - component: {fileID: 229817805880175315}
   m_Layer: 7
   m_Name: Cube
@@ -34,7 +34,7 @@ Transform:
   - {fileID: 209576063628081261}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8054531930283744305
+--- !u!114 &7292541045344842600
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

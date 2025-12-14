@@ -8,7 +8,7 @@ public class InventoryTypeButton : MonoBehaviour, IPointerEnterHandler, IPointer
     private Image targetGraphicImage;
     private InventoryNameList inventoryNameList;
 
-    private bool isSelected;
+    public bool isSelected;
 
     [SerializeField]
     private InventoryListType listType;
@@ -44,11 +44,20 @@ public class InventoryTypeButton : MonoBehaviour, IPointerEnterHandler, IPointer
             targetGraphicImage.color = disappearColor;
     }
 
+    public void ResetButton()
+    {
+        targetGraphicImage.color = disappearColor;
+        isSelected = false;
+    }
+
     private void IsSelected()
     {
+        inventoryNameList.ResetBtnExceptThis(this);
+
         isSelected = true;
         targetGraphicImage.color = selectedColor;
-        
+
         inventoryNameList.ListSelected(listType);
     }
+
 }

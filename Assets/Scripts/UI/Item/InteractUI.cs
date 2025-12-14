@@ -19,8 +19,6 @@ public class InteractUI : MonoBehaviour
         mainCamera = Camera.main;
     }
 
-
-
     private void LateUpdate()
     {
         if (!activated)
@@ -33,9 +31,17 @@ public class InteractUI : MonoBehaviour
     {
         if (activated == isOn)
             return;
+        if (uiObject == null)
+            return;
 
         activated = isOn;
         uiObject.transform.gameObject.SetActive(activated);
+        
+    }
+
+    public void UnnecessaryInteractUI()
+    {
+        Destroy(uiObject);
     }
 
 }

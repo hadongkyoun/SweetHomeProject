@@ -40,7 +40,14 @@ public class Item : MonoBehaviour, IInteractable
     {
         return itemInformation.ItemType;
     }
-    
+    public int GetItemID()
+    {
+        return itemInformation.ItemID;
+    }
+    public GameObject GetItemPrefab()
+    {
+        return itemInformation.ItemPrefab;
+    }
 
     public void Interact()
     {
@@ -69,15 +76,8 @@ public class Item : MonoBehaviour, IInteractable
 
     }
 
-    //public void ActivateUse()
+    //public void Use()
     //{
 
-    //    if (GetItemCanUse() == false)
-    //    {
-    //        Debug.LogError("This is not can use item. But it called.");
-    //        return;
-    //    }
-
-    //    inventoryHandler.PlayerUseItem(this);
     //}
 }

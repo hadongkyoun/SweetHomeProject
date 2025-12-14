@@ -22,6 +22,12 @@ public class Slot : MonoBehaviour
         if (itemSprite == null)
         {
             image.sprite = null;
+
+            if(TryGetComponent<MainSlot>(out MainSlot mainSlot))
+            {
+                mainSlot.NoneImage();
+            }
+
             if (haveItemImage)
                 Activated(false);
             return;
