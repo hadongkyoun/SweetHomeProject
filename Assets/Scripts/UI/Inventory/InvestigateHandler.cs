@@ -5,7 +5,7 @@ public class InvestigateHandler : MonoBehaviour
 
     [SerializeField]
     private GameObject investigatePanel;
-
+    
     private CanvasGroup investigateFlim;
 
     private GameObject itemPrefab;
