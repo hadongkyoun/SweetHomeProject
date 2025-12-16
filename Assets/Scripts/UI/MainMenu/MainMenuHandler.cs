@@ -14,6 +14,7 @@ public class MainMenuHandler : MonoBehaviour
     private Button OptionBtn;
     [SerializeField]
     private Button ExitBtn;
+    private SelectHandler selectHandler;
 
     [Space(15)]
     [Header("Loading Screen")]
@@ -21,26 +22,35 @@ public class MainMenuHandler : MonoBehaviour
     private CanvasGroup loadingScreen;
     [SerializeField]
     private Slider loadingSlider;
-
-
+    [Tooltip("Loading speed")]
+    [SerializeField] 
+    private float fakeLoadingSpeed = 2.0f; // 여기서 시간 조절하세요!
 
     private void Awake()
     {
-        StartBtn.onClick.AddListener(ClickStart);
-        ContinueBtn.onClick.AddListener(ClickContinue);
-        OptionBtn.onClick.AddListener(ClickOption);
-        ExitBtn.onClick.AddListener(ClickExit);
-
         loadingScreen.alpha = 0f;
         loadingScreen.interactable = false;
         loadingScreen.blocksRaycasts = false;
+
+        selectHandler = FindFirstObjectByType<SelectHandler>();
+
+        StartBtn.onClick.AddListener(() => selectHandler.OpenAskStartPanel(true));
+        ContinueBtn.onClick.AddListener(()=> selectHandler.OpenSaveSlotPanel(true));
+        OptionBtn.onClick.AddListener(() => selectHandler.OpenOptionPanel(true));
+        ExitBtn.onClick.AddListener(() => selectHandler.OpenAskExitPanel(true));
     }
 
+    
 
-    private void ClickStart()
+    public void StartGame()
     {
         // 코루틴으로 비동기 로드 시작
         StartCoroutine(LoadSceneAsyncRoutine("TestScene"));
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit();
     }
 
     private IEnumerator LoadSceneAsyncRoutine(string sceneName)
@@ -60,15 +70,18 @@ public class MainMenuHandler : MonoBehaviour
 
         while (!op.isDone)
         {
+            yield return null;
+
+                
             // op.progress는 0..0.9 까지 채워지고, 0.9는 '로딩 완료 대기' 상태
             float progress = Mathf.Clamp01(op.progress / 0.9f);
 
-            loadingSlider.value = progress;
+            loadingSlider.value = Mathf.MoveTowards(loadingSlider.value, progress, fakeLoadingSpeed * Time.deltaTime);
             Debug.Log($"Loading Progress: {progress * 100f}%");
             //if (loadingPercentText != null) loadingPercentText.text = $"{Mathf.RoundToInt(progress * 100f)}%";
 
             // 로드가 끝나고 activation 대기 상태
-            if (op.progress >= 0.9f)
+            if (op.progress >= 0.9f && loadingSlider.value >= 0.9f)
             {
                 loadingSlider.value = 1f;
                 //if (loadingPercentText != null) loadingPercentText.text = "100%";
@@ -80,25 +93,7 @@ public class MainMenuHandler : MonoBehaviour
                 op.allowSceneActivation = true;
             }
 
-            yield return null;
         }
     }
 
-
-
-    private void ClickContinue()
-    {
-        Debug.Log("Continue Clicked");
-    }
-
-    private void ClickOption()
-    {
-        Debug.Log("Option Clicked");
-    }
-
-    private void ClickExit()
-    {
-        Debug.Log("Exit Clicked");
-        Application.Quit();
-    }
 }

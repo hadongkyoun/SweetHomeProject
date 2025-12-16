@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class MainSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
+public class MainSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler, IInventoryCloseReset
 {
     [Space(15)]
     [Header("Main Slot Information")]
@@ -89,7 +89,8 @@ public class MainSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         }
     }
 
-    public void ResetEvent()
+
+    public void InventoryReset()
     {
         canClick = false;
         UIGuideGroup.alpha = 0;

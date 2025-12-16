@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class InvestigateHandler : MonoBehaviour
+public class InvestigateHandler : MonoBehaviour, IInventoryCloseReset
 {
 
     [SerializeField]
@@ -40,16 +40,6 @@ public class InvestigateHandler : MonoBehaviour
         investigateMode.SetItemPrefabForInvestigate(itemPrefab);
     }
 
-    public void ResetEvent()
-    {
-        if (itemPrefab != null)
-        {
-            Destroy(itemPrefab.gameObject);
-        }
-        investigatePanel.SetActive(false);
-    }
-
-
     public bool IsInvestigateModeOn()
     {
         return investigatePanel.activeSelf;
@@ -67,5 +57,14 @@ public class InvestigateHandler : MonoBehaviour
             investigateFlim.blocksRaycasts = false;
             investigateFlim.interactable = false;
         }
+    }
+
+    public void InventoryReset()
+    {
+        if (itemPrefab != null)
+        {
+            Destroy(itemPrefab.gameObject);
+        }
+        investigatePanel.SetActive(false);
     }
 }

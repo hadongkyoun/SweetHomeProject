@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -46,9 +47,7 @@ public class InventoryUI : MonoBehaviour
     private int referenceValue;
     private bool itemSlotSystemOn = false;
 
-
-    [SerializeField]
-    private UnityEvent ResetEvent;
+    private UnityEvent ResetEvent = new UnityEvent();
 
     private bool resetFinish = false;
 
@@ -59,7 +58,17 @@ public class InventoryUI : MonoBehaviour
         Inventory.interactable = false;
         Inventory.blocksRaycasts = false;
 
-        investigateHandler = GetComponentInChildren<InvestigateHandler>();  
+        investigateHandler = GetComponentInChildren<InvestigateHandler>();
+
+        IEnumerable<IInventoryCloseReset> allResetObjects = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None).OfType<IInventoryCloseReset>().ToList();
+
+        Debug.Log($"[InventoryUI] : Found {allResetObjects.Count()} IInventoryCloseReset objects.");
+
+        foreach (var resetObject in allResetObjects)
+        {
+            ResetEvent.AddListener(resetObject.InventoryReset);
+        }
+
     }
 
     private void Start()
@@ -75,13 +84,13 @@ public class InventoryUI : MonoBehaviour
 
     private void Update()
     {
-        
+
 
         if (!isOn)
         {
             if (resetFinish == false)
             {
-                ResetEvent.Invoke();
+                ResetEvent?.Invoke();
                 ItemsCountZero();
                 resetFinish = true;
             }
@@ -93,7 +102,7 @@ public class InventoryUI : MonoBehaviour
 
         #region Wheel Scroll Update
 
-        
+
 
         if (itemSlotSystemOn)
         {
@@ -319,7 +328,7 @@ public class InventoryUI : MonoBehaviour
             return;
         }
 
-      
+
 
         itemSlotSystemOn = true;
         currentItemListType = listType;

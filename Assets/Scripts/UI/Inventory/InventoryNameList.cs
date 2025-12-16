@@ -8,7 +8,7 @@ public enum InventoryListType
     Memo,
 }
 
-public class InventoryNameList : MonoBehaviour
+public class InventoryNameList : MonoBehaviour, IInventoryCloseReset
 {
     private InventoryUI inventoryUI;
 
@@ -36,12 +36,11 @@ public class InventoryNameList : MonoBehaviour
         }
     }
 
-    public void ResetEvent()
+    public void InventoryReset()
     {
         foreach (InventoryTypeButton button in buttons)
         {
             button.ResetButton();
         }
     }
-
 }
