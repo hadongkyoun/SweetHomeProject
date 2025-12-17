@@ -244,6 +244,7 @@ public class PlayerController : MonoBehaviour
     {
         Vector2 lookInputValue = new Vector2(inputHandler.LookInput.x * lookSensitivity.x, inputHandler.LookInput.y * lookSensitivity.y);
 
+        // Invert Y Check
         CurrentPitch -= lookInputValue.y;
 
         FollowCam.localRotation = Quaternion.Euler(CurrentPitch, 0, 0);

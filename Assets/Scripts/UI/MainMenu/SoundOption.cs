@@ -45,15 +45,18 @@ public class SoundOption : MonoBehaviour
     private Button BackBtn;
     [SerializeField]
     private Button ApplyBtn;
+    private bool applyTrigger;
     [SerializeField]
     private Button ResetBtn;
+    [SerializeField]
+    private GameObject OptionFilm;
 
 
     private void Awake()
     {
         BackBtn.onClick.AddListener(ExitSoundSetting);
         ApplyBtn.onClick.AddListener(ApplySoundSetting);
-
+        ResetBtn.onClick.AddListener(ResetSoundSetting);
 
         masterVSlider.onValueChanged.AddListener(SetMasterVolume);
         bgVSlider.onValueChanged.AddListener(SetBackgroundVolume);
@@ -61,20 +64,23 @@ public class SoundOption : MonoBehaviour
         voiceVSlider.onValueChanged.AddListener(SetVoiceVolume);
     }
 
-    private void Start()
+    void OnEnable()
     {
         InitSoundOption();
+        Debug.Log("Enabled");
     }
 
     private void InitSoundOption()
     {
+        OptionFilm.SetActive(true);
+        applyTrigger = false;
 
         // Master Volume
         masterVSlider.value = PlayerPrefs.GetFloat("masterVolume", 0.5f);
         firstMasterVolume = masterVSlider.value;
 
         // Background Volume
-        bgVSlider.value = PlayerPrefs.GetFloat("backgroundVolume",0.5f);
+        bgVSlider.value = PlayerPrefs.GetFloat("backgroundVolume", 0.5f);
         firstBgVolume = bgVSlider.value;
 
         // Effect Volume
@@ -134,7 +140,7 @@ public class SoundOption : MonoBehaviour
     }
     #endregion
 
-    //Apply
+    #region Apply
     private void ApplySoundSetting()
     {
         //Master Volume
@@ -160,6 +166,7 @@ public class SoundOption : MonoBehaviour
         {
             PlayerPrefs.SetFloat("voiceVolume", voiceVSlider.value);
         }
+        applyTrigger = true;
 
         ApplyBtn.interactable = false;
     }
@@ -175,10 +182,47 @@ public class SoundOption : MonoBehaviour
 
         ApplyBtn.interactable = isChanged;
     }
+    #endregion
 
-    //Exit
+    #region Reset
+    // Reset
+    private void ResetSoundSetting()
+    {
+
+        // Master Volume
+        masterVSlider.value = 0.5f;
+
+        // Background Volume
+        bgVSlider.value = 0.5f;
+
+        // Effect Volume
+        effectVSlider.value = 0.5f;
+
+        // Voice Volume
+        voiceVSlider.value = 0.5f;
+
+        SetMasterVolume(0.5f);
+        SetBackgroundVolume(0.5f);
+        SetEffectVolume(0.5f);
+        SetVoiceVolume(0.5f);
+    }
+    #endregion
+
+
+    #region Exit
+    // Exit
     private void ExitSoundSetting()
     {
+        if (!applyTrigger)
+        {
+            SetMasterVolume(firstMasterVolume);
+            SetBackgroundVolume(firstBgVolume);
+            SetEffectVolume(firstEffectVolume);
+            SetVoiceVolume(firstVoiceVolume);
+        }
+
+        OptionFilm.SetActive(false);
         gameObject.SetActive(false);
     }
+    #endregion
 }

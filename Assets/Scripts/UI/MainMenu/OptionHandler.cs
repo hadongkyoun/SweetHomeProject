@@ -21,9 +21,9 @@ public class OptionHandler : MonoBehaviour
     [Space(15)]
     [Header("GamePlay Setting")]
     [SerializeField]
-    private GameObject GamePlayPanel;
+    private GameObject GameplayPanel;
     [SerializeField]
-    private Button GamePlayBtn;
+    private Button GameplayBtn;
 
     [Space(15)]
     [Header("Return Setting")]
@@ -35,7 +35,7 @@ public class OptionHandler : MonoBehaviour
     {
         //GraphicsBtn.onClick.AddListener(() => OpenGraphicPanel(true));
         SoundBtn.onClick.AddListener(() => OpenSoundPanel(true));
-        //GamePlayBtn.onClick.AddListener(() => OpenGamePlayPanel(true));
+        GameplayBtn.onClick.AddListener(() => OpenGamePlayPanel(true));
         ReturnBtn.onClick.AddListener(Return);
     }
 
@@ -49,7 +49,7 @@ public class OptionHandler : MonoBehaviour
     }
     public void OpenGamePlayPanel(bool isOn)
     {
-        GamePlayPanel.SetActive(isOn);
+        GameplayPanel.SetActive(isOn);
     }
     private void Return()
     {
