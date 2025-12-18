@@ -16,7 +16,12 @@ public class GameplayOption : MonoBehaviour
     [Header("Invert Y Setting")]
     [SerializeField]
     private Toggle invertYToggle;
-    private bool firstToggled;
+    private bool firstInvertYToggled;
+
+    [Header("Headbob Setting")]
+    [SerializeField]
+    private Toggle headbobToggl;
+    private bool firstHeadbobToggled;
 
     [Header("Setting Handle")]
     [SerializeField]
@@ -55,7 +60,7 @@ public class GameplayOption : MonoBehaviour
 
         // Invert Y
         invertYToggle.isOn = ToggleIntSwitch(PlayerPrefs.GetInt("invertY", 0));
-        firstToggled = invertYToggle.isOn;
+        firstInvertYToggled = invertYToggle.isOn;
 
         //// Background Volume
         //bgVSlider.value = PlayerPrefs.GetFloat("backgroundVolume", 0.5f);
@@ -114,7 +119,7 @@ public class GameplayOption : MonoBehaviour
             PlayerPrefs.SetFloat("sensitivity", sensitivitySlider.value);
         }
 
-        if(invertYToggle.isOn != firstToggled)
+        if(invertYToggle.isOn != firstInvertYToggled)
         {
             PlayerPrefs.SetInt("invertY", ToggleIntSwitch(invertYToggle.isOn));
         }
@@ -146,7 +151,7 @@ public class GameplayOption : MonoBehaviour
 
         // 하나라도 다르면 true
         if (sensitivitySlider.value != firstSensitivityAmount) isChanged = true;
-        else if (invertYToggle.isOn != firstToggled) isChanged = true;
+        else if (invertYToggle.isOn != firstInvertYToggled) isChanged = true;
         //else if (effectVSlider.value != firstEffectVolume) isChanged = true;
         //else if (voiceVSlider.value != firstVoiceVolume) isChanged = true;
 
@@ -188,7 +193,7 @@ public class GameplayOption : MonoBehaviour
         if (!applyTrigger)
         {
             SetMouseSensitivity(firstSensitivityAmount);
-            SetInvertY(firstToggled);
+            SetInvertY(firstInvertYToggled);
             //SetEffectVolume(firstEffectVolume);
             //SetVoiceVolume(firstVoiceVolume);
         }
