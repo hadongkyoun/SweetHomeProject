@@ -4075,8 +4075,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1430805760}
+  - component: {fileID: 1430805761}
   m_Layer: 0
-  m_Name: OptionSettingHandler
+  m_Name: GameSettingHandler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4097,6 +4098,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1430805761
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1430805759}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3ca6ee565be11f4b9467b19184c63dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1437361952
 GameObject:
   m_ObjectHideFlags: 0

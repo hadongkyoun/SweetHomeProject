@@ -13,10 +13,6 @@ public class FPSDisplay : MonoBehaviour
     private int frameCount;
     private int frameRate;
 
-    private void Awake()
-    {
-        Application.targetFrameRate = 60;
-    }
 
     private void Start()
     {

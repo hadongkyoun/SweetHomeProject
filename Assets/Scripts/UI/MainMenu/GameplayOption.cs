@@ -1,6 +1,5 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.Audio;
 using UnityEngine.UI;
 
 public class GameplayOption : MonoBehaviour
@@ -20,7 +19,7 @@ public class GameplayOption : MonoBehaviour
 
     [Header("Headbob Setting")]
     [SerializeField]
-    private Toggle headbobToggl;
+    private Toggle headbobToggle;
     private bool firstHeadbobToggled;
 
     [Header("Setting Handle")]
@@ -36,12 +35,13 @@ public class GameplayOption : MonoBehaviour
 
     void Awake()
     {
-        BackBtn.onClick.AddListener(ExitSoundSetting);
-        ApplyBtn.onClick.AddListener(ApplySoundSetting);
-        ResetBtn.onClick.AddListener(ResetSoundSetting);
+        BackBtn.onClick.AddListener(ExitGameplaySetting);
+        ApplyBtn.onClick.AddListener(ApplyGameplaySetting);
+        ResetBtn.onClick.AddListener(ResetGameplaySetting);
 
         sensitivitySlider.onValueChanged.AddListener(SetMouseSensitivity);
         invertYToggle.onValueChanged.AddListener(SetInvertY);
+        headbobToggle.onValueChanged.AddListener(SetHeadbob);
     }
 
     void OnEnable()
@@ -62,33 +62,15 @@ public class GameplayOption : MonoBehaviour
         invertYToggle.isOn = ToggleIntSwitch(PlayerPrefs.GetInt("invertY", 0));
         firstInvertYToggled = invertYToggle.isOn;
 
-        //// Background Volume
-        //bgVSlider.value = PlayerPrefs.GetFloat("backgroundVolume", 0.5f);
-        //firstBgVolume = bgVSlider.value;
-
-        //// Effect Volume
-        //effectVSlider.value = PlayerPrefs.GetFloat("effectVolume", 0.5f);
-        //firstEffectVolume = effectVSlider.value;
-
-        //// Voice Volume
-        //voiceVSlider.value = PlayerPrefs.GetFloat("voiceVolume", 0.5f);
-        //firstVoiceVolume = voiceVSlider.value;
+        // Headbob
+        headbobToggle.isOn = ToggleIntSwitch(PlayerPrefs.GetInt("headbob", 0));
+        firstHeadbobToggled = headbobToggle.isOn;
 
         // Initially disable Apply Button
         ApplyBtn.interactable = false;
     }
 
-
-    #region Mouse Sensitivity
-    public void SetMouseSensitivity(float amount)
-    {
-        CheckApplyState();
-
-        sensitivityAmount.text = $"{amount * 10}";
-    }
-    #endregion
-
-    #region Invert Y
+    #region Toggle Method
     private bool ToggleIntSwitch(int isOn)
     {
         if (isOn == 1)
@@ -103,15 +85,35 @@ public class GameplayOption : MonoBehaviour
         else
             return 0;
     }
+    #endregion
 
+    #region Mouse Sensitivity
+    public void SetMouseSensitivity(float amount)
+    {
+        CheckApplyState();
+
+        sensitivityAmount.text = $"{amount * 10}";
+    }
+    #endregion
+
+
+    #region Invert Y
     private void SetInvertY(bool isOn)
     {
         CheckApplyState();
     }
     #endregion
 
+    #region Headbob
+    private void SetHeadbob(bool isOn)
+    {
+        CheckApplyState();
+    }
+    #endregion
+
+
     #region Apply
-    private void ApplySoundSetting()
+    private void ApplyGameplaySetting()
     {
         // Mouse Sensitivity
         if (sensitivitySlider.value != firstSensitivityAmount)
@@ -119,28 +121,16 @@ public class GameplayOption : MonoBehaviour
             PlayerPrefs.SetFloat("sensitivity", sensitivitySlider.value);
         }
 
-        if(invertYToggle.isOn != firstInvertYToggled)
+        if (invertYToggle.isOn != firstInvertYToggled)
         {
             PlayerPrefs.SetInt("invertY", ToggleIntSwitch(invertYToggle.isOn));
         }
 
-        ////Background Volume
-        //if (bgVSlider.value != firstBgVolume)
-        //{
-        //    PlayerPrefs.SetFloat("backgroundVolume", bgVSlider.value);
-        //}
+        if (headbobToggle.isOn != firstHeadbobToggled)
+        {
+            PlayerPrefs.SetInt("headbob", ToggleIntSwitch(headbobToggle.isOn));
+        }
 
-        ////Effect Volume
-        //if (effectVSlider.value != firstEffectVolume)
-        //{
-        //    PlayerPrefs.SetFloat("effectVolume", effectVSlider.value);
-        //}
-
-        ////Voice Volume
-        //if (voiceVSlider.value != firstVoiceVolume)
-        //{
-        //    PlayerPrefs.SetFloat("voiceVolume", voiceVSlider.value);
-        //}
         applyTrigger = true;
 
         ApplyBtn.interactable = false;
@@ -152,50 +142,36 @@ public class GameplayOption : MonoBehaviour
         // 하나라도 다르면 true
         if (sensitivitySlider.value != firstSensitivityAmount) isChanged = true;
         else if (invertYToggle.isOn != firstInvertYToggled) isChanged = true;
-        //else if (effectVSlider.value != firstEffectVolume) isChanged = true;
-        //else if (voiceVSlider.value != firstVoiceVolume) isChanged = true;
+        else if (headbobToggle.isOn != firstHeadbobToggled) isChanged = true;
 
-        ApplyBtn.interactable = isChanged;
+            ApplyBtn.interactable = isChanged;
     }
     #endregion
 
     #region Reset
     // Reset
-    private void ResetSoundSetting()
+    private void ResetGameplaySetting()
     {
 
-        // Master Volume
         sensitivitySlider.value = 0.2f;
 
         invertYToggle.isOn = false;
+        
+        headbobToggle.isOn = false;
 
-        //// Background Volume
-        //bgVSlider.value = 0.5f;
-
-        //// Effect Volume
-        //effectVSlider.value = 0.5f;
-
-        //// Voice Volume
-        //voiceVSlider.value = 0.5f;
-
-        //SetMasterVolume(0.5f);
-        //SetBackgroundVolume(0.5f);
-        //SetEffectVolume(0.5f);
-        //SetVoiceVolume(0.5f);
     }
     #endregion
 
 
     #region Exit
     // Exit
-    private void ExitSoundSetting()
+    private void ExitGameplaySetting()
     {
         if (!applyTrigger)
         {
             SetMouseSensitivity(firstSensitivityAmount);
             SetInvertY(firstInvertYToggled);
-            //SetEffectVolume(firstEffectVolume);
-            //SetVoiceVolume(firstVoiceVolume);
+            SetHeadbob(firstHeadbobToggled);
         }
 
         OptionFilm.SetActive(false);

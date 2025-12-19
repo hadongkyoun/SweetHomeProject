@@ -33,7 +33,7 @@ public class OptionHandler : MonoBehaviour
 
     private void Awake()
     {
-        //GraphicsBtn.onClick.AddListener(() => OpenGraphicPanel(true));
+        GraphicsBtn.onClick.AddListener(() => OpenGraphicPanel(true));
         SoundBtn.onClick.AddListener(() => OpenSoundPanel(true));
         GameplayBtn.onClick.AddListener(() => OpenGamePlayPanel(true));
         ReturnBtn.onClick.AddListener(Return);
