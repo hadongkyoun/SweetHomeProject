@@ -18,23 +18,21 @@ public class UIManager : MonoBehaviour
     private bool inventoryOn;
 
     private MainMenuHandler mainMenuHandler;
-    private CanvasGroup mainMenuCanvasGroup;
     private bool mainMenuOn;
 
     private void Awake()
     {
         inventoryUI = GetComponentInChildren<InventoryUI>();
-        inventoryCanvasGroup = GetComponent<CanvasGroup>();
+        inventoryCanvasGroup = inventoryUI.GetComponent<CanvasGroup>();
 
-        if (GameObject.FindWithTag("Player").TryGetComponent<PlayerInput>(out PlayerInput playerInput))
+        if (GameObject.FindGameObjectWithTag("Player").TryGetComponent<PlayerInput>(out PlayerInput playerInput))
         {
             this.playerInput = playerInput;
         }
         if (MenuPrefab != null)
         {
             GameObject mainMenuObject = Instantiate(MenuPrefab, this.transform);
-            mainMenuHandler = mainMenuObject.GetComponent<MainMenuHandler>();
-            mainMenuCanvasGroup = mainMenuObject.GetComponent<CanvasGroup>();
+            mainMenuHandler = mainMenuObject.GetComponentInChildren<MainMenuHandler>();
         }
     }
 
@@ -54,43 +52,20 @@ public class UIManager : MonoBehaviour
 
     public void Inventory()
     {
+        // 메인메뉴가 켜져있을 땐 인벤토리 접근 불가
         if (mainMenuOn)
             return;
-
-        inventoryOn = !inventoryOn;
-        if (inventoryOn)
-        {
-            inventoryCanvasGroup.alpha = 1;
-        }
-        else
-        {
-            inventoryCanvasGroup.alpha = 0;
-        }
-
-        inventoryCanvasGroup.blocksRaycasts = inventoryOn;
-        inventoryCanvasGroup.interactable = inventoryOn;
-
-        playerInput.enabled = !inventoryOn;
-        LimitCursor(inventoryOn);
+        bool isOn = inventoryUI.InventoryTrigger();
+        playerInput.enabled = !isOn;
+        LimitCursor(isOn);
     }
 
     public void Menu()
     {
-        mainMenuOn = !mainMenuOn;
-        if (mainMenuOn)
-        {
-            mainMenuCanvasGroup.alpha = 1;
-        }
-        else
-        {
-            mainMenuCanvasGroup.alpha = 0;
-        }
+        bool isOn = mainMenuHandler.MainMenuTrigger();
 
-        mainMenuCanvasGroup.blocksRaycasts = mainMenuOn;
-        mainMenuCanvasGroup.interactable = mainMenuOn;
-
-        playerInput.enabled = !mainMenuOn;
-        LimitCursor(mainMenuOn);
+        playerInput.enabled = !isOn;
+        LimitCursor(isOn);
     }
 
 }

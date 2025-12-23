@@ -2214,6 +2214,7 @@ MonoBehaviour:
   ContinueBtn: {fileID: 7733687933439733593}
   OptionBtn: {fileID: 1399734291551078336}
   ExitBtn: {fileID: 7772737585212617859}
+  Option: {fileID: 4340948337064599170}
   loadingScreen: {fileID: 4813680418481774211}
   loadingSlider: {fileID: 4431231029436618871}
   fakeLoadingSpeed: 0.5
@@ -6863,6 +6864,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b48503b18547c6b489aea31d295497e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OptionFilm: {fileID: 6122015561447323708}
   GraphicsPanel: {fileID: 5386109072878892441}
   GraphicsBtn: {fileID: 4655145626220171096}
   SoundPanel: {fileID: 7414749456708208777}
@@ -8986,7 +8988,6 @@ MonoBehaviour:
   BackBtn: {fileID: 6509313734838882412}
   ApplyBtn: {fileID: 1094507473147829044}
   ResetBtn: {fileID: 3053944396402763737}
-  OptionFilm: {fileID: 6122015561447323708}
 --- !u!1 &5468539686642391696
 GameObject:
   m_ObjectHideFlags: 0
@@ -13088,7 +13089,6 @@ MonoBehaviour:
   BackBtn: {fileID: 5482294489764740343}
   ApplyBtn: {fileID: 852798767785434824}
   ResetBtn: {fileID: 3167352091189494705}
-  OptionFilm: {fileID: 6122015561447323708}
 --- !u!1 &7450494293150807848
 GameObject:
   m_ObjectHideFlags: 0
@@ -13190,7 +13190,6 @@ MonoBehaviour:
   BackBtn: {fileID: 2751421993186608694}
   ApplyBtn: {fileID: 3926453799534844454}
   ResetBtn: {fileID: 3380441509011635620}
-  OptionFilm: {fileID: 6122015561447323708}
 --- !u!1 &7474630622079572320
 GameObject:
   m_ObjectHideFlags: 0

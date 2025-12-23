@@ -53,11 +53,13 @@ public class GraphicOption : MonoBehaviour
     private bool applyTrigger;
     [SerializeField]
     private Button ResetBtn;
-    [SerializeField]
-    private GameObject OptionFilm;
 
+    private OptionHandler optionHandler;
     private void Awake()
     {
+        optionHandler = GetComponentInParent<OptionHandler>();
+
+
         baseQualityLevel = QualitySettings.GetQualityLevel();
         qualityDropdown.value = baseQualityLevel;
         qualityDropdown.RefreshShownValue();
@@ -65,6 +67,7 @@ public class GraphicOption : MonoBehaviour
         resolutions = Screen.resolutions;
         resolutionDropdown.ClearOptions();
         baseResolutionIndex = 0;
+
 
         List<string> options = new List<string>();
         for (int i = 0; i < resolutions.Length; i++)
@@ -130,7 +133,6 @@ public class GraphicOption : MonoBehaviour
 
     private void InitSoundOption()
     {
-        OptionFilm.SetActive(true);
         applyTrigger = false;
 
         // Brightness
@@ -338,7 +340,7 @@ public class GraphicOption : MonoBehaviour
             SetQuality(firstQualityLevel);
         }
 
-        OptionFilm.SetActive(false);
+        optionHandler.CloseFilm();
         gameObject.SetActive(false);
     }
     #endregion

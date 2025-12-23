@@ -33,7 +33,7 @@ public class Interactor : MonoBehaviour
     [SerializeField]
     private Image interactCursor;
 
-    private Collider[] hitColliders = new Collider[5];
+    private Collider[] hitColliders = new Collider[9];
     private HashSet<Collider> trackColliders = new HashSet<Collider>();
     private List<Collider> newColliders = new List<Collider>();
     private HashSet<Collider> exitColliders = new HashSet<Collider>();

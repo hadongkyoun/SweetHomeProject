@@ -30,11 +30,13 @@ public class GameplayOption : MonoBehaviour
     private bool applyTrigger;
     [SerializeField]
     private Button ResetBtn;
-    [SerializeField]
-    private GameObject OptionFilm;
+
+    private OptionHandler optionHandler;
 
     void Awake()
     {
+        optionHandler = GetComponentInParent<OptionHandler>();
+
         BackBtn.onClick.AddListener(ExitGameplaySetting);
         ApplyBtn.onClick.AddListener(ApplyGameplaySetting);
         ResetBtn.onClick.AddListener(ResetGameplaySetting);
@@ -51,7 +53,6 @@ public class GameplayOption : MonoBehaviour
 
     private void InitSoundOption()
     {
-        OptionFilm.SetActive(true);
         applyTrigger = false;
 
         // Mouse Sensitivity
@@ -92,7 +93,7 @@ public class GameplayOption : MonoBehaviour
     {
         CheckApplyState();
 
-        sensitivityAmount.text = $"{amount * 10}";
+        sensitivityAmount.text = $"{amount * 10:F1}";
     }
     #endregion
 
@@ -134,6 +135,8 @@ public class GameplayOption : MonoBehaviour
         applyTrigger = true;
 
         ApplyBtn.interactable = false;
+
+        GameManager.Instance.UpdateGameSetting("Gameplay");
     }
     private void CheckApplyState()
     {
@@ -174,7 +177,7 @@ public class GameplayOption : MonoBehaviour
             SetHeadbob(firstHeadbobToggled);
         }
 
-        OptionFilm.SetActive(false);
+        optionHandler.CloseFilm();
         gameObject.SetActive(false);
     }
     #endregion

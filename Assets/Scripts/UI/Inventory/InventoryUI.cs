@@ -162,7 +162,6 @@ public class InventoryUI : MonoBehaviour
         #endregion
     }
 
-    private bool isOn = false;
 
 
     public Item GetIndicatedItem()
@@ -176,20 +175,25 @@ public class InventoryUI : MonoBehaviour
 
 
     #region Inventory UI Handle Methods
-    //public void InventoryTrigger(bool isOn)
-    //{
-    //    if (isOn)
-    //    {
-    //        Inventory.alpha = 1;
-    //    }
-    //    else
-    //    {
-    //        Inventory.alpha = 0;
-    //    }
+    private bool isOn = false;
+    public bool InventoryTrigger()
+    {
+        isOn = !isOn;
 
-    //    Inventory.blocksRaycasts = isOn;
-    //    Inventory.interactable = isOn;
-    //}
+        if (isOn)
+        {
+            Inventory.alpha = 1;
+        }
+        else
+        {
+            Inventory.alpha = 0;
+        }
+
+        Inventory.blocksRaycasts = isOn;
+        Inventory.interactable = isOn;
+
+        return isOn;
+    }
 
     private void ItemsCountZero()
     {

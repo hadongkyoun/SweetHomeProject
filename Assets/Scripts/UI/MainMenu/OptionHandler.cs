@@ -1,9 +1,13 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class OptionHandler : MonoBehaviour
 {
-    [Space(15)]
+    [SerializeField]
+    private GameObject OptionFilm;
+
+    [Space(20)]
     [Header("Graphics Setting")]
     [SerializeField]
     private GameObject GraphicsPanel;
@@ -31,28 +35,42 @@ public class OptionHandler : MonoBehaviour
     private Button ReturnBtn;
 
 
+
     private void Awake()
     {
         GraphicsBtn.onClick.AddListener(() => OpenGraphicPanel(true));
         SoundBtn.onClick.AddListener(() => OpenSoundPanel(true));
         GameplayBtn.onClick.AddListener(() => OpenGamePlayPanel(true));
         ReturnBtn.onClick.AddListener(Return);
+        
     }
 
     public void OpenGraphicPanel(bool isOn)
     {
+        OptionFilm.SetActive(isOn);
         GraphicsPanel.SetActive(isOn);
     }
     public void OpenSoundPanel(bool isOn)
     {
+        OptionFilm.SetActive(isOn);
         SoundPanel.SetActive(isOn);
     }
     public void OpenGamePlayPanel(bool isOn)
     {
+        OptionFilm.SetActive(isOn);
         GameplayPanel.SetActive(isOn);
     }
-    private void Return()
+    public void Return()
     {
+        OpenGamePlayPanel(false);
+        OpenGraphicPanel(false);
+        OpenSoundPanel(false);
+        OptionFilm.SetActive(false);
         this.gameObject.SetActive(false);
+    }
+
+    public void CloseFilm()
+    {
+        OptionFilm.SetActive(false);
     }
 }

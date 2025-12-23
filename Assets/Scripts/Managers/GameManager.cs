@@ -3,14 +3,18 @@ using UnityEngine;
 public class GameManager : Singleton<GameManager>
 {
     private MainMenuHandler MenuHandler;
+    private GameSettingHandler gameSettingHandler;
 
     // InGame true 면 MainMenuHandler에서 Start Disabled 하기
     public bool InGame = false;
 
-    private void Start()
+    public override void Awake()
     {
+        base.Awake();
         MenuHandler = FindFirstObjectByType<MainMenuHandler>();
+        gameSettingHandler = GetComponent<GameSettingHandler>();
     }
+
 
     public void StartGame()
     {
@@ -28,4 +32,16 @@ public class GameManager : Singleton<GameManager>
         Application.Quit();
     }
 
+    public void UpdateGameSetting(string settingType)
+    {
+        if (!InGame)            
+            return;
+        
+        if(gameSettingHandler != null)
+        {
+            gameSettingHandler.UpdateGameplaySettingValue();
+        }
+
+
+    }
 }

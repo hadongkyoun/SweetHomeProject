@@ -48,12 +48,13 @@ public class SoundOption : MonoBehaviour
     private bool applyTrigger;
     [SerializeField]
     private Button ResetBtn;
-    [SerializeField]
-    private GameObject OptionFilm;
 
+    private OptionHandler optionHandler;
 
     private void Awake()
     {
+        optionHandler = GetComponentInParent<OptionHandler>();  
+
         BackBtn.onClick.AddListener(ExitSoundSetting);
         ApplyBtn.onClick.AddListener(ApplySoundSetting);
         ResetBtn.onClick.AddListener(ResetSoundSetting);
@@ -72,7 +73,6 @@ public class SoundOption : MonoBehaviour
 
     private void InitSoundOption()
     {
-        OptionFilm.SetActive(true);
         applyTrigger = false;
 
         // Master Volume
@@ -221,7 +221,7 @@ public class SoundOption : MonoBehaviour
             SetVoiceVolume(firstVoiceVolume);
         }
 
-        OptionFilm.SetActive(false);
+        optionHandler.CloseFilm();
         gameObject.SetActive(false);
     }
     #endregion

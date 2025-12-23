@@ -14,6 +14,12 @@ public class MainMenuHandler : MonoBehaviour
     private Button OptionBtn;
     [SerializeField]
     private Button ExitBtn;
+    [Space(15)]
+    [Header("Option")]
+    [SerializeField]
+    private GameObject Option;
+    private CanvasGroup mainMenuCanvasGroup;
+
     private SelectHandler selectHandler;
     private bool isMenuOn;
 
@@ -28,8 +34,6 @@ public class MainMenuHandler : MonoBehaviour
     private float fakeLoadingSpeed = 2.0f; // 여기서 시간 조절하세요!
 
 
-
-    private CanvasGroup MainMenuCanvasGroup;
     private void Awake()
     {
 
@@ -44,7 +48,7 @@ public class MainMenuHandler : MonoBehaviour
         OptionBtn.onClick.AddListener(() => selectHandler.OpenOptionPanel(true));
         ExitBtn.onClick.AddListener(() => selectHandler.OpenAskExitPanel(true));
 
-        MainMenuCanvasGroup = GetComponentInParent<CanvasGroup>();
+        mainMenuCanvasGroup = GetComponentInParent<CanvasGroup>();
     }
 
     private void Start()
@@ -53,19 +57,44 @@ public class MainMenuHandler : MonoBehaviour
         if (GameManager.Instance.InGame)
         {
             StartBtn.interactable = false;
-            MainMenuCanvasGroup.interactable = false;
-            MainMenuCanvasGroup.blocksRaycasts = false;
-            MainMenuCanvasGroup.alpha = 0f;
+            mainMenuCanvasGroup.interactable = false;
+            mainMenuCanvasGroup.blocksRaycasts = false;
+            mainMenuCanvasGroup.alpha = 0f;
         }
         else
         {
             StartBtn.interactable = true;
-            MainMenuCanvasGroup.interactable = true;
-            MainMenuCanvasGroup.blocksRaycasts = true;
-            MainMenuCanvasGroup.alpha = 1.0f;
+            mainMenuCanvasGroup.interactable = true;
+            mainMenuCanvasGroup.blocksRaycasts = true;
+            mainMenuCanvasGroup.alpha = 1.0f;
         }
     }
 
+    public bool MainMenuTrigger()
+    {
+        isMenuOn = !isMenuOn;
+        if (isMenuOn)
+        {
+            mainMenuCanvasGroup.alpha = 1;
+        }
+        else
+        {
+            mainMenuCanvasGroup.alpha = 0;
+        }
+
+        mainMenuCanvasGroup.blocksRaycasts = isMenuOn;
+        mainMenuCanvasGroup.interactable = isMenuOn;
+
+        if (Option.activeInHierarchy)
+        {
+            if(Option.TryGetComponent<OptionHandler>(out OptionHandler optionHandler))
+            {
+                optionHandler.Return();
+            }
+        }
+
+        return isMenuOn;
+    }
 
 
     public void Loading()

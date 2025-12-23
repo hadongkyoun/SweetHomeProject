@@ -21,6 +21,7 @@ public class AudioManager : Singleton<AudioManager>
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+
         InitAudioMixer();
 
         bgmSource.clip = bgmClip;

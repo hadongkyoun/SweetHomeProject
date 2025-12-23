@@ -6,7 +6,7 @@ using UnityEngine;
     This is State Manager ( Final State Machine )
  */
 [RequireComponent(typeof(CharacterController))]
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IGameSetting
 {
     [Header("Player Camera Parameters : Local position")]
     [SerializeField]
@@ -44,6 +44,7 @@ public class PlayerController : MonoBehaviour
 
     [Tooltip("마우스 민감도")]
     [SerializeField]
+    private float sensitivityAmount;
     private Vector2 lookSensitivity = new Vector2(0.1f, 0.1f);
     [Tooltip("상하 고개 한계점")]
     [SerializeField]
@@ -58,6 +59,8 @@ public class PlayerController : MonoBehaviour
             currentPitch = Mathf.Clamp(value, -pitchLimit, pitchLimit);
         }
     }
+    private float invertY;
+    private int toggledInvertY;
 
     [Space(15)]
     [Header("Physics Parameters")]
@@ -104,6 +107,19 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
+        toggledInvertY = PlayerPrefs.GetInt("invertY", 0);
+        if (toggledInvertY == 1)
+        {
+            invertY = -1.0f;
+        }
+        else
+        {
+            invertY = 1.0f;
+        }
+
+        sensitivityAmount = PlayerPrefs.GetFloat("sensitivity", 0.2f);
+        lookSensitivity = new Vector2(sensitivityAmount, sensitivityAmount);
+
         xVelocity_AnimParameter = Animator.StringToHash("X_Velocity");
         yVelocity_AnimParameter = Animator.StringToHash("Y_Velocity");
 
@@ -130,7 +146,7 @@ public class PlayerController : MonoBehaviour
         FollowCam.localPosition = finalCamOffset;
     }
 
-    
+
 
     private void GroundUpdate()
     {
@@ -168,7 +184,7 @@ public class PlayerController : MonoBehaviour
     {
         currentSpeed = inputHandler.IsSprinting ? sprintSpeed : moveSpeed;
 
-        
+
         if (inputHandler.MoveInput == Vector2.zero)
         {
             isMoving = false;
@@ -240,18 +256,33 @@ public class PlayerController : MonoBehaviour
         characterController.Move(_velocity * Time.deltaTime);
     }
 
+
+
     void LookUpdate()
     {
         Vector2 lookInputValue = new Vector2(inputHandler.LookInput.x * lookSensitivity.x, inputHandler.LookInput.y * lookSensitivity.y);
 
         // Invert Y Check
-        CurrentPitch -= lookInputValue.y;
+        CurrentPitch -= lookInputValue.y * invertY;
 
         FollowCam.localRotation = Quaternion.Euler(CurrentPitch, 0, 0);
         transform.Rotate(Vector3.up * lookInputValue.x);
 
     }
 
+    public void UpdateGameSettingInGame()
+    {
+        toggledInvertY = PlayerPrefs.GetInt("invertY", 0);
+        if (toggledInvertY == 1)
+        {
+            invertY = -1.0f;
+        }
+        else
+        {
+            invertY = 1.0f;
+        }
 
-
+        sensitivityAmount = PlayerPrefs.GetFloat("sensitivity", 0.2f);
+        lookSensitivity = new Vector2(sensitivityAmount, sensitivityAmount);
+    }
 }
