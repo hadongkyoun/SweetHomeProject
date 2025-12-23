@@ -15,6 +15,7 @@ public class MainMenuHandler : MonoBehaviour
     [SerializeField]
     private Button ExitBtn;
     private SelectHandler selectHandler;
+    private bool isMenuOn;
 
     [Space(15)]
     [Header("Loading Screen")]
@@ -26,8 +27,12 @@ public class MainMenuHandler : MonoBehaviour
     [SerializeField] 
     private float fakeLoadingSpeed = 2.0f; // 여기서 시간 조절하세요!
 
+
+
+    private CanvasGroup MainMenuCanvasGroup;
     private void Awake()
     {
+
         loadingScreen.alpha = 0f;
         loadingScreen.interactable = false;
         loadingScreen.blocksRaycasts = false;
@@ -38,20 +43,34 @@ public class MainMenuHandler : MonoBehaviour
         ContinueBtn.onClick.AddListener(()=> selectHandler.OpenSaveSlotPanel(true));
         OptionBtn.onClick.AddListener(() => selectHandler.OpenOptionPanel(true));
         ExitBtn.onClick.AddListener(() => selectHandler.OpenAskExitPanel(true));
+
+        MainMenuCanvasGroup = GetComponentInParent<CanvasGroup>();
     }
 
-    
-
-    public void StartGame()
+    private void Start()
     {
-        // 코루틴으로 비동기 로드 시작
+        // InGame   
+        if (GameManager.Instance.InGame)
+        {
+            StartBtn.interactable = false;
+            MainMenuCanvasGroup.interactable = false;
+            MainMenuCanvasGroup.blocksRaycasts = false;
+            MainMenuCanvasGroup.alpha = 0f;
+        }
+        else
+        {
+            StartBtn.interactable = true;
+            MainMenuCanvasGroup.interactable = true;
+            MainMenuCanvasGroup.blocksRaycasts = true;
+            MainMenuCanvasGroup.alpha = 1.0f;
+        }
+    }
+
+
+
+    public void Loading()
+    {
         StartCoroutine(LoadSceneAsyncRoutine("TestScene"));
-    }
-
-    public void ExitGame()
-    {
-        // GameManager Quit 으로
-        Application.Quit();
     }
 
     private IEnumerator LoadSceneAsyncRoutine(string sceneName)

@@ -60,6 +60,7 @@ public class InventoryUI : MonoBehaviour
 
         investigateHandler = GetComponentInChildren<InvestigateHandler>();
 
+        
         IEnumerable<IInventoryCloseReset> allResetObjects = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None).OfType<IInventoryCloseReset>().ToList();
 
         Debug.Log($"[InventoryUI] : Found {allResetObjects.Count()} IInventoryCloseReset objects.");
@@ -175,24 +176,20 @@ public class InventoryUI : MonoBehaviour
 
 
     #region Inventory UI Handle Methods
-    public bool InventoryTrigger()
-    {
-        isOn = !isOn;
+    //public void InventoryTrigger(bool isOn)
+    //{
+    //    if (isOn)
+    //    {
+    //        Inventory.alpha = 1;
+    //    }
+    //    else
+    //    {
+    //        Inventory.alpha = 0;
+    //    }
 
-        if (isOn)
-        {
-            Inventory.alpha = 1;
-        }
-        else
-        {
-            Inventory.alpha = 0;
-        }
-
-        Inventory.blocksRaycasts = isOn;
-        Inventory.interactable = isOn;
-
-        return isOn;
-    }
+    //    Inventory.blocksRaycasts = isOn;
+    //    Inventory.interactable = isOn;
+    //}
 
     private void ItemsCountZero()
     {

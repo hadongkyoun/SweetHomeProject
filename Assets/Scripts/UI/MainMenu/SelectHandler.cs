@@ -37,15 +37,14 @@ public class SelectHandler : MonoBehaviour
     private Button ExitNoBtn;
 
 
-    private void Awake()
+    private void Start()
     {
-        mainMenuHandler = FindFirstObjectByType<MainMenuHandler>();
 
-        StartYesBtn.onClick.AddListener(mainMenuHandler.StartGame);
+        StartYesBtn.onClick.AddListener(GameManager.Instance.StartGame);
         StartYesBtn.onClick.AddListener(() => OpenAskStartPanel(false));
         StartNoBtn.onClick.AddListener(() => OpenAskStartPanel(false));
 
-        ExitYesBtn.onClick.AddListener(mainMenuHandler.ExitGame);
+        ExitYesBtn.onClick.AddListener(GameManager.Instance.ExitGame);
         ExitNoBtn.onClick.AddListener(() => OpenAskExitPanel(false));
 
     }
