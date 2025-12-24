@@ -5205,7 +5205,7 @@ MonoBehaviour:
   - {fileID: 259854827}
   itemSlotView: {fileID: 99341704}
   slotViewHandler: {fileID: 99341705}
-  wheelIncreaseAmount: 2
+  wheelIncreaseAmount: 9
 --- !u!1 &1950388353
 GameObject:
   m_ObjectHideFlags: 0

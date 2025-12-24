@@ -55,6 +55,7 @@ public class GraphicOption : MonoBehaviour
     private Button ResetBtn;
 
     private OptionHandler optionHandler;
+    List<Resolution> uniqueList = new List<Resolution>();
     private void Awake()
     {
         optionHandler = GetComponentInParent<OptionHandler>();
@@ -64,22 +65,47 @@ public class GraphicOption : MonoBehaviour
         qualityDropdown.value = baseQualityLevel;
         qualityDropdown.RefreshShownValue();
 
-        resolutions = Screen.resolutions;
-        resolutionDropdown.ClearOptions();
         baseResolutionIndex = 0;
+        resolutionDropdown.ClearOptions();
 
+        // 1. 기존 Screen.resolutions 가져오기
+        Resolution[] allResolutions = Screen.resolutions;
+        uniqueList.Clear(); // 리스트 초기화
 
-        List<string> options = new List<string>();
-        for (int i = 0; i < resolutions.Length; i++)
+        // 2. 중복 제거 로직 (작성하신 코드 그대로 사용)
+        foreach (var res in allResolutions)
         {
-            string option = $"{resolutions[i].width} x {resolutions[i].height}";
+            int index = uniqueList.FindIndex(item => item.width == res.width && item.height == res.height);
+
+            if (index == -1)
+            {
+                uniqueList.Add(res);
+            }
+            else
+            {
+                // 주사율 더 높은 것으로 교체
+                if (res.refreshRateRatio.value > uniqueList[index].refreshRateRatio.value)
+                {
+                    uniqueList[index] = res;
+                }
+            }
+        }
+
+        // 3. UI에 넣기
+        List<string> options = new List<string>();
+
+        for (int i = 0; i < uniqueList.Count; i++)
+        {
+            Resolution res = uniqueList[i];
+            string option = $"{res.width} x {res.height}";
             options.Add(option);
 
-            if (resolutions[i].width == Screen.width && resolutions[i].height == Screen.height)
+            if (res.width == Screen.width && res.height == Screen.height)
             {
                 baseResolutionIndex = i;
             }
         }
+
         resolutionDropdown.AddOptions(options);
         resolutionDropdown.value = baseResolutionIndex;
         resolutionDropdown.RefreshShownValue();
@@ -294,7 +320,7 @@ public class GraphicOption : MonoBehaviour
         //Resolution
         if (resolutionDropdown.value != firstResolutionIndex)
         {
-            Resolution resolution = resolutions[resolutionDropdown.value];
+            Resolution resolution = uniqueList[resolutionDropdown.value];
             Screen.SetResolution(resolution.width, resolution.height, fullscreenToggle.isOn);
 
         }
@@ -315,13 +341,16 @@ public class GraphicOption : MonoBehaviour
 
         brightnessSlider.value = 1f;
 
-        fullscreenToggle.isOn = false;
+        fullscreenToggle.isOn = true;
 
         resolutionDropdown.value = baseResolutionIndex;
         resolutionDropdown.RefreshShownValue();
+
         qualityDropdown.value = baseQualityLevel;
         qualityDropdown.RefreshShownValue();
+
         vsyncToggle.isOn = false;
+
 
     }
     #endregion
