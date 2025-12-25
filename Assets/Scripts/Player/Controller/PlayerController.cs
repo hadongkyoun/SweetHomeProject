@@ -24,6 +24,8 @@ public class PlayerController : MonoBehaviour, IGameSetting
     //private Vector3 camGlimpseOffset;
     private Vector3 finalCamOffset;
 
+    // This is not reference with above values
+    private CinemachineCamera playerVirtualCamera;
 
     [Space(15)]
     // ================================================== Move
@@ -103,6 +105,12 @@ public class PlayerController : MonoBehaviour, IGameSetting
         inputHandler = GetComponent<InputHandler>();
         characterController = GetComponent<CharacterController>();
         _animator = GetComponentInChildren<Animator>();
+
+        playerVirtualCamera = FindFirstObjectByType<CinemachineCamera>();
+        if(playerVirtualCamera == null)
+        {
+            Debug.LogError("ERROR!! : Cannot reference virtual cinemachine camera in PlayerController.cs");
+        }
     }
 
     private void Start()
@@ -119,6 +127,13 @@ public class PlayerController : MonoBehaviour, IGameSetting
 
         sensitivityAmount = PlayerPrefs.GetFloat("sensitivity", 0.2f);
         lookSensitivity = new Vector2(sensitivityAmount, sensitivityAmount);
+
+        if (playerVirtualCamera != null)
+        {
+            playerVirtualCamera.Lens.FieldOfView = PlayerPrefs.GetFloat("fov", 60);
+        }
+
+        //=================================
 
         xVelocity_AnimParameter = Animator.StringToHash("X_Velocity");
         yVelocity_AnimParameter = Animator.StringToHash("Y_Velocity");
@@ -284,5 +299,7 @@ public class PlayerController : MonoBehaviour, IGameSetting
 
         sensitivityAmount = PlayerPrefs.GetFloat("sensitivity", 0.2f);
         lookSensitivity = new Vector2(sensitivityAmount, sensitivityAmount);
+
+        playerVirtualCamera.Lens.FieldOfView = PlayerPrefs.GetFloat("fov", 60);
     }
 }

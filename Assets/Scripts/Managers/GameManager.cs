@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : Singleton<GameManager>
 {
@@ -13,6 +14,9 @@ public class GameManager : Singleton<GameManager>
         base.Awake();
         MenuHandler = FindFirstObjectByType<MainMenuHandler>();
         gameSettingHandler = GetComponent<GameSettingHandler>();
+        Application.targetFrameRate = 60;
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
 
@@ -37,11 +41,23 @@ public class GameManager : Singleton<GameManager>
         if (!InGame)            
             return;
         
+        // 현재로썬 Gameplay 만이 해당 기능 필요
         if(gameSettingHandler != null)
         {
             gameSettingHandler.UpdateGameplaySettingValue();
         }
 
 
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Debug.Log($"{scene.name} 씬이 로드되었습니다! 초기화 작업을 시작합니다.");
+
+        // 예: 그래픽 설정 재적용
+        GraphicManager.Instance.InitGraphicSetting();
+
+        // 예: UI 초기화
+        // UIManager.Instance.ResetUI();
     }
 }

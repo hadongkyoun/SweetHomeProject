@@ -36,7 +36,6 @@ public class GraphicOption : MonoBehaviour
     private TMP_Dropdown resolutionDropdown;
     private Resolution[] resolutions;
     private int firstResolutionIndex;
-    private int baseResolutionIndex;
 
     [Header("Quality Setting")]
     [SerializeField]
@@ -55,7 +54,7 @@ public class GraphicOption : MonoBehaviour
     private Button ResetBtn;
 
     private OptionHandler optionHandler;
-    List<Resolution> uniqueList = new List<Resolution>();
+
     private void Awake()
     {
         optionHandler = GetComponentInParent<OptionHandler>();
@@ -65,50 +64,9 @@ public class GraphicOption : MonoBehaviour
         qualityDropdown.value = baseQualityLevel;
         qualityDropdown.RefreshShownValue();
 
-        baseResolutionIndex = 0;
+        
         resolutionDropdown.ClearOptions();
 
-        // 1. 기존 Screen.resolutions 가져오기
-        Resolution[] allResolutions = Screen.resolutions;
-        uniqueList.Clear(); // 리스트 초기화
-
-        // 2. 중복 제거 로직 (작성하신 코드 그대로 사용)
-        foreach (var res in allResolutions)
-        {
-            int index = uniqueList.FindIndex(item => item.width == res.width && item.height == res.height);
-
-            if (index == -1)
-            {
-                uniqueList.Add(res);
-            }
-            else
-            {
-                // 주사율 더 높은 것으로 교체
-                if (res.refreshRateRatio.value > uniqueList[index].refreshRateRatio.value)
-                {
-                    uniqueList[index] = res;
-                }
-            }
-        }
-
-        // 3. UI에 넣기
-        List<string> options = new List<string>();
-
-        for (int i = 0; i < uniqueList.Count; i++)
-        {
-            Resolution res = uniqueList[i];
-            string option = $"{res.width} x {res.height}";
-            options.Add(option);
-
-            if (res.width == Screen.width && res.height == Screen.height)
-            {
-                baseResolutionIndex = i;
-            }
-        }
-
-        resolutionDropdown.AddOptions(options);
-        resolutionDropdown.value = baseResolutionIndex;
-        resolutionDropdown.RefreshShownValue();
 
         BackBtn.onClick.AddListener(ExitSoundSetting);
         ApplyBtn.onClick.AddListener(ApplyGameplaySetting);
@@ -119,38 +77,25 @@ public class GraphicOption : MonoBehaviour
         vsyncToggle.onValueChanged.AddListener(SetVsync);
         resolutionDropdown.onValueChanged.AddListener(SetResolution);
         qualityDropdown.onValueChanged.AddListener(SetQuality);
+    }
+    private void Start()
+    {
 
+        List<string> options = new List<string>();
 
-        if (brightnessSlider.value != firstBrightnessAmount)
+        for (int i = 0; i < GraphicManager.Instance.uniqueList.Count; i++)
         {
-            // Set Brightness
-            if (globalVolume.profile.TryGet(out ColorAdjustments colorAdjustments))
-            {
-                colorAdjustments.postExposure.value = brightnessSlider.value;
-            }
+            Resolution res = GraphicManager.Instance.uniqueList[i];
+            string option = $"{res.width} x {res.height}";
+            options.Add(option);
+
         }
+        resolutionDropdown.AddOptions(options);
+        resolutionDropdown.value = GraphicManager.Instance.BaseResolutionIndex;
+        resolutionDropdown.RefreshShownValue();
 
-
-        ////Fullscreen
-        //Screen.fullScreen = ToggleIntSwitch(PlayerPrefs.GetInt("fullscreen", 0));
-
-        ////Vsync
-        //QualitySettings.vSyncCount = PlayerPrefs.GetInt("vsync", 1);
-
-        //if (QualitySettings.vSyncCount == 0)
-        //    Application.targetFrameRate = 60;
-
-        //Resolution resolution = resolutions[PlayerPrefs.GetInt("resolution", baseResolutionIndex)];
-        //Screen.SetResolution(resolution.width, resolution.height, fullscreenToggle.isOn);
-
-
-
-        ////Quality
-        //if (qualityDropdown.value != firstQualityLevel)
-        //{
-        //    // Set Quality
-        //    QualitySettings.SetQualityLevel(qualityDropdown.value);
-        //}
+        // Initially disable Apply Button
+        ApplyBtn.interactable = false;
     }
     void OnEnable()
     {
@@ -160,31 +105,32 @@ public class GraphicOption : MonoBehaviour
     private void InitSoundOption()
     {
         applyTrigger = false;
+        // Initially disable Apply Button
+        ApplyBtn.interactable = false;
 
         // Brightness
         brightnessSlider.value = PlayerPrefs.GetFloat("brightness", 1.0f);
         firstBrightnessAmount = brightnessSlider.value;
 
         // Fullscreen
-        fullscreenToggle.isOn = ToggleIntSwitch(PlayerPrefs.GetInt("fullscreen", 0));
+        fullscreenToggle.isOn = ToggleIntSwitch(PlayerPrefs.GetInt("fullscreen", 1));
         firstFullscreenToggled = fullscreenToggle.isOn;
 
         // Vsync
         vsyncToggle.isOn = ToggleIntSwitch(PlayerPrefs.GetInt("vsync", 1));
         firstVsyncToggled = vsyncToggle.isOn;
 
+
         // Resolution
-        resolutionDropdown.value = PlayerPrefs.GetInt("resolution", baseResolutionIndex);
+        resolutionDropdown.value = PlayerPrefs.GetInt("resolution", GraphicManager.Instance.BaseResolutionIndex);
         resolutionDropdown.RefreshShownValue();
-        firstResolutionIndex = baseResolutionIndex;
+        firstResolutionIndex = GraphicManager.Instance.BaseResolutionIndex;
 
         // Quality
         qualityDropdown.value = PlayerPrefs.GetInt("quality", baseQualityLevel);
         qualityDropdown.RefreshShownValue();
         firstQualityLevel = qualityDropdown.value;
 
-        // Initially disable Apply Button
-        ApplyBtn.interactable = false;
     }
     #region Toggle Method
     private bool ToggleIntSwitch(int isOn)
@@ -248,29 +194,34 @@ public class GraphicOption : MonoBehaviour
         if (brightnessSlider.value != firstBrightnessAmount)
         {
             PlayerPrefs.SetFloat("brightness", brightnessSlider.value);
+            firstBrightnessAmount = brightnessSlider.value;
         }
 
         if (fullscreenToggle.isOn != firstFullscreenToggled)
         {
             PlayerPrefs.SetInt("fullscreen", ToggleIntSwitch(fullscreenToggle.isOn));
+            firstFullscreenToggled = fullscreenToggle.isOn;
         }
 
         if (vsyncToggle.isOn != firstVsyncToggled)
         {
             PlayerPrefs.SetInt("vsync", ToggleIntSwitch(vsyncToggle.isOn));
+            firstVsyncToggled = vsyncToggle.isOn;
         }
 
         if (resolutionDropdown.value != firstResolutionIndex)
         {
             PlayerPrefs.SetInt("resolution", resolutionDropdown.value);
+            firstResolutionIndex = resolutionDropdown.value;
         }
 
         if (qualityDropdown.value != firstQualityLevel)
         {
             PlayerPrefs.SetInt("quality", qualityDropdown.value);
+            firstQualityLevel = qualityDropdown.value;
         }
 
-        ApplyGraphicSet();
+        GraphicManager.Instance.ApplyGraphicSet(fullscreenToggle.isOn, ToggleIntSwitch(vsyncToggle.isOn), resolutionDropdown.value, qualityDropdown.value);
 
         applyTrigger = true;
 
@@ -290,48 +241,6 @@ public class GraphicOption : MonoBehaviour
         ApplyBtn.interactable = isChanged;
     }
 
-    private void ApplyGraphicSet()
-    {
-        //Brightness
-        if (brightnessSlider.value != firstBrightnessAmount)
-        {
-            //// Set Brightness
-            //if (globalVolume.profile.TryGet(out ColorAdjustments colorAdjustments))
-            //{
-            //    colorAdjustments.postExposure.value = brightnessSlider.value;
-            //}
-        }
-        //Fullscreen
-        if (fullscreenToggle.isOn != firstFullscreenToggled)
-        {
-            // Set Fullscreen
-            Screen.fullScreen = fullscreenToggle.isOn;
-        }
-
-        //Vsync
-        if (vsyncToggle.isOn != firstVsyncToggled)
-        {
-            QualitySettings.vSyncCount = ToggleIntSwitch(vsyncToggle.isOn);
-
-            if (QualitySettings.vSyncCount == 0)
-                Application.targetFrameRate = 60;
-        }
-
-        //Resolution
-        if (resolutionDropdown.value != firstResolutionIndex)
-        {
-            Resolution resolution = uniqueList[resolutionDropdown.value];
-            Screen.SetResolution(resolution.width, resolution.height, fullscreenToggle.isOn);
-
-        }
-
-        //Quality
-        if (qualityDropdown.value != firstQualityLevel)
-        {
-            // Set Quality
-            QualitySettings.SetQualityLevel(qualityDropdown.value);
-        }
-    }
     #endregion
 
     #region Reset
@@ -343,13 +252,14 @@ public class GraphicOption : MonoBehaviour
 
         fullscreenToggle.isOn = true;
 
-        resolutionDropdown.value = baseResolutionIndex;
+        vsyncToggle.isOn = false;
+
+        resolutionDropdown.value = GraphicManager.Instance.BaseResolutionIndex;
         resolutionDropdown.RefreshShownValue();
 
         qualityDropdown.value = baseQualityLevel;
         qualityDropdown.RefreshShownValue();
 
-        vsyncToggle.isOn = false;
 
 
     }
@@ -360,17 +270,10 @@ public class GraphicOption : MonoBehaviour
     // Exit
     private void ExitSoundSetting()
     {
-        if (!applyTrigger)
-        {
-            SetBrightness(firstBrightnessAmount);
-            SetFullscreen(firstFullscreenToggled);
-            SetVsync(firstVsyncToggled);
-            SetResolution(firstResolutionIndex);
-            SetQuality(firstQualityLevel);
-        }
 
         optionHandler.CloseFilm();
         gameObject.SetActive(false);
     }
     #endregion
+
 }

@@ -22,6 +22,13 @@ public class GameplayOption : MonoBehaviour
     private Toggle headbobToggle;
     private bool firstHeadbobToggled;
 
+    [Header("FOV Setting")]
+    [SerializeField]
+    private Slider fovSlider;
+    [SerializeField]
+    private TextMeshProUGUI fovAmount;
+    private float firstFOVAmount;
+
     [Header("Setting Handle")]
     [SerializeField]
     private Button BackBtn;
@@ -44,6 +51,7 @@ public class GameplayOption : MonoBehaviour
         sensitivitySlider.onValueChanged.AddListener(SetMouseSensitivity);
         invertYToggle.onValueChanged.AddListener(SetInvertY);
         headbobToggle.onValueChanged.AddListener(SetHeadbob);
+        fovSlider.onValueChanged.AddListener(SetFOVSensitivity);
     }
 
     void OnEnable()
@@ -66,6 +74,10 @@ public class GameplayOption : MonoBehaviour
         // Headbob
         headbobToggle.isOn = ToggleIntSwitch(PlayerPrefs.GetInt("headbob", 0));
         firstHeadbobToggled = headbobToggle.isOn;
+
+        // FOV
+        fovSlider.value = PlayerPrefs.GetFloat("fov", 60f);
+        firstFOVAmount = fovSlider.value;
 
         // Initially disable Apply Button
         ApplyBtn.interactable = false;
@@ -112,6 +124,14 @@ public class GameplayOption : MonoBehaviour
     }
     #endregion
 
+    #region FOV
+    public void SetFOVSensitivity(float amount)
+    {
+        CheckApplyState();
+
+        fovAmount.text = $"{amount:F0}";
+    }
+    #endregion
 
     #region Apply
     private void ApplyGameplaySetting()
@@ -120,16 +140,25 @@ public class GameplayOption : MonoBehaviour
         if (sensitivitySlider.value != firstSensitivityAmount)
         {
             PlayerPrefs.SetFloat("sensitivity", sensitivitySlider.value);
+            firstSensitivityAmount = sensitivitySlider.value;
         }
 
         if (invertYToggle.isOn != firstInvertYToggled)
         {
             PlayerPrefs.SetInt("invertY", ToggleIntSwitch(invertYToggle.isOn));
+            firstInvertYToggled = invertYToggle.isOn;
         }
 
         if (headbobToggle.isOn != firstHeadbobToggled)
         {
             PlayerPrefs.SetInt("headbob", ToggleIntSwitch(headbobToggle.isOn));
+            firstHeadbobToggled = headbobToggle.isOn;
+        }
+
+        if (fovSlider.value != firstFOVAmount)
+        {
+            PlayerPrefs.SetFloat("fov", fovSlider.value);
+            firstFOVAmount = fovSlider.value;
         }
 
         applyTrigger = true;
@@ -146,8 +175,9 @@ public class GameplayOption : MonoBehaviour
         if (sensitivitySlider.value != firstSensitivityAmount) isChanged = true;
         else if (invertYToggle.isOn != firstInvertYToggled) isChanged = true;
         else if (headbobToggle.isOn != firstHeadbobToggled) isChanged = true;
+        else if (fovSlider.value != firstFOVAmount) isChanged = true;
 
-            ApplyBtn.interactable = isChanged;
+        ApplyBtn.interactable = isChanged;
     }
     #endregion
 
@@ -159,8 +189,10 @@ public class GameplayOption : MonoBehaviour
         sensitivitySlider.value = 0.2f;
 
         invertYToggle.isOn = false;
-        
+
         headbobToggle.isOn = false;
+
+        fovSlider.value = 60f;
 
     }
     #endregion
@@ -170,13 +202,6 @@ public class GameplayOption : MonoBehaviour
     // Exit
     private void ExitGameplaySetting()
     {
-        if (!applyTrigger)
-        {
-            SetMouseSensitivity(firstSensitivityAmount);
-            SetInvertY(firstInvertYToggled);
-            SetHeadbob(firstHeadbobToggled);
-        }
-
         optionHandler.CloseFilm();
         gameObject.SetActive(false);
     }
