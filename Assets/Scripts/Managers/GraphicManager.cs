@@ -99,6 +99,8 @@ public class GraphicManager : Singleton<GraphicManager>
         // Set Fullscreen
         Screen.fullScreen = fullScreenisOn;
 
+        // Set Quality
+        QualitySettings.SetQualityLevel(qualityIndex);
 
         //Vsync
 
@@ -111,13 +113,6 @@ public class GraphicManager : Singleton<GraphicManager>
 
         Resolution resolution = uniqueList[resolutionIndex];
         Screen.SetResolution(resolution.width, resolution.height, fullScreenisOn);
-
-
-
-        //Quality
-
-        // Set Quality
-        QualitySettings.SetQualityLevel(qualityIndex);
 
     }
 }
