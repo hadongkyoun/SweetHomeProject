@@ -221,7 +221,7 @@ public class GraphicOption : MonoBehaviour
             firstQualityLevel = qualityDropdown.value;
         }
 
-        GraphicManager.Instance.ApplyGraphicSet(fullscreenToggle.isOn, ToggleIntSwitch(vsyncToggle.isOn), resolutionDropdown.value, qualityDropdown.value);
+        GraphicManager.Instance.ApplyGraphicSet(brightnessSlider.value, fullscreenToggle.isOn, ToggleIntSwitch(vsyncToggle.isOn), resolutionDropdown.value, qualityDropdown.value);
 
         applyTrigger = true;
 

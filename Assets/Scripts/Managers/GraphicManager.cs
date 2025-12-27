@@ -1,10 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public class GraphicManager : Singleton<GraphicManager>
 {
+    public VolumeProfile volumeProfile;
 
     public List<Resolution> uniqueList = new List<Resolution>();
+
+    [HideInInspector]
     public int BaseResolutionIndex;
 
     public override void Awake()
@@ -63,8 +68,14 @@ public class GraphicManager : Singleton<GraphicManager>
     #endregion
     public void InitGraphicSetting()
     {
-        // Brightness
-        //brightnessSlider.value = PlayerPrefs.GetFloat("brightness", 1.0f);
+        //Brightness
+        if (volumeProfile != null)
+        {
+            if (volumeProfile.TryGet(out ColorAdjustments colorAdjustments))
+            {
+                colorAdjustments.postExposure.value = PlayerPrefs.GetFloat("brightness", 1.0f);
+            }
+        }
 
         // Fullscreen
         Screen.fullScreen = ToggleIntSwitch(PlayerPrefs.GetInt("fullscreen", 1));
@@ -76,7 +87,7 @@ public class GraphicManager : Singleton<GraphicManager>
         int resolutionIndex = PlayerPrefs.GetInt("resolution", BaseResolutionIndex);
         Resolution resolution = uniqueList[resolutionIndex];
         Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
-       
+
 
         // Quality
         QualitySettings.SetQualityLevel(PlayerPrefs.GetInt("quality", QualitySettings.GetQualityLevel()));
@@ -84,15 +95,17 @@ public class GraphicManager : Singleton<GraphicManager>
 
     }
 
-    public void ApplyGraphicSet(bool fullScreenisOn, int vsyncCount, int resolutionIndex, int qualityIndex)
+    public void ApplyGraphicSet(float brightnessAmount, bool fullScreenisOn, int vsyncCount, int resolutionIndex, int qualityIndex)
     {
         //Brightness
 
-        //// Set Brightness
-        //if (globalVolume.profile.TryGet(out ColorAdjustments colorAdjustments))
-        //{
-        //    colorAdjustments.postExposure.value = brightnessSlider.value;
-        //}
+        if (volumeProfile != null)
+        {
+            if (volumeProfile.TryGet(out ColorAdjustments colorAdjustments))
+            {
+                colorAdjustments.postExposure.value = brightnessAmount;
+            }
+        }
 
         //Fullscreen
 

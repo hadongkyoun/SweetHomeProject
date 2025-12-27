@@ -369,6 +369,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eef64d64ebbd8704883bed5687afcac1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  volumeProfile: {fileID: 11400000, guid: 10fc4df2da32a41aaa32d77bc913491c, type: 2}
+  BaseResolutionIndex: 0
 --- !u!1 &682676874
 GameObject:
   m_ObjectHideFlags: 0
